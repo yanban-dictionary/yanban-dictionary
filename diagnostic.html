@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Diagnostic Test</title>
+<style>
+  body { background:#161a1f; color:#EDE7DA; font-family:sans-serif; padding:20px; line-height:1.8; }
+  .ok { color:#4a8f6b; }
+  .fail { color:#e0685a; }
+  .pending { color:#dab161; }
+</style>
+</head>
+<body>
+<h2>CDN Test — စစ်ဆေးနေပါသည်...</h2>
+<div id="results">
+  <div id="r-react" class="pending">React (unpkg.com): ...</div>
+  <div id="r-reactdom" class="pending">ReactDOM (unpkg.com): ...</div>
+  <div id="r-babel" class="pending">Babel (unpkg.com): ...</div>
+  <div id="r-tailwind" class="pending">Tailwind (cdn.tailwindcss.com): ...</div>
+  <div id="r-font" class="pending">Google Fonts: ...</div>
+</div>
+<p id="summary" style="margin-top:20px;font-weight:bold;"></p>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin onload="document.getElementById('r-react').className='ok'; document.getElementById('r-react').textContent='React (unpkg.com): ✓ OK'" onerror="document.getElementById('r-react').className='fail'; document.getElementById('r-react').textContent='React (unpkg.com): ✗ BLOCKED'"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin onload="document.getElementById('r-reactdom').className='ok'; document.getElementById('r-reactdom').textContent='ReactDOM (unpkg.com): ✓ OK'" onerror="document.getElementById('r-reactdom').className='fail'; document.getElementById('r-reactdom').textContent='ReactDOM (unpkg.com): ✗ BLOCKED'"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin onload="document.getElementById('r-babel').className='ok'; document.getElementById('r-babel').textContent='Babel (unpkg.com): ✓ OK'" onerror="document.getElementById('r-babel').className='fail'; document.getElementById('r-babel').textContent='Babel (unpkg.com): ✗ BLOCKED'"></script>
