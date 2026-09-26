@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>Yanban-English Dictionary</title>
+<style>
+:root{
+  --bg:#161a1f; --panel:#1c2128; --panel2:#13161b; --border:#2c323c; --border2:#333a45;
+  --text:#EDE7DA; --text-dim:#b3bac6; --text-mute:#8b93a1; --text-faint:#6f7787;
+  --gold:#C9A24B; --gold-light:#dab161; --red:#e0685a; --green:#4a8f6b;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--bg);}
+body{
+  font-family:'Myanmar Text','Noto Sans Myanmar','Pyidaungsu','Padauk',-apple-system,'Segoe UI',Roboto,sans-serif;
+  color:var(--text); min-height:100vh;
+}
+#root{min-height:100vh;display:flex;flex-direction:column;}
+.serif{font-family:Georgia,'Myanmar Text','Noto Sans Myanmar',serif;}
+.mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;}
+a{color:inherit;}
+button{font-family:inherit;cursor:pointer;}
+input,textarea{font-family:inherit;}
+.wrap{max-width:900px;margin:0 auto;}
+.px{padding-left:24px;padding-right:24px;}
+@media(min-width:640px){.px{padding-left:40px;padding-right:40px;}}
+
+/* header */
+.topbar{border-bottom:1px solid var(--border);padding:16px 24px;}
+@media(min-width:640px){.topbar{padding:16px 40px;}}
+.topbar-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-icon{width:36px;height:36px;border-radius:999px;border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;color:var(--gold);flex-shrink:0;}
+.brand h1{font-family:Georgia,serif;font-size:20px;font-weight:600;margin:0;color:#F5EFDF;line-height:1.2;}
+.brand p{font-family:monospace;font-size:10px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.05em;margin:2px 0 0;}
+.menu-btn{width:36px;height:36px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid var(--border2);color:var(--text-dim);background:transparent;}
+.menu-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+/* footer */
+footer{padding:12px 24px;border-top:1px solid var(--border);font-family:monospace;font-size:10px;color:#5c6472;display:flex;justify-content:space-between;margin-top:auto;}
+@media(min-width:640px){footer{padding:12px 40px;}}
+
+/* menu panel */
+.menu-overlay{position:fixed;inset:0;z-index:50;display:flex;justify-content:flex-end;}
+.menu-scrim{position:absolute;inset:0;background:rgba(9,11,14,.97);}
+.menu-panel{position:relative;width:100%;max-width:320px;height:100%;padding:20px;display:flex;flex-direction:column;background:var(--panel);border-left:1px solid var(--border2);overflow-y:auto;}
+.menu-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.menu-title{font-family:Georgia,serif;font-size:18px;color:#F5EFDF;}
+.menu-nav{flex:1;display:flex;flex-direction:column;gap:4px;}
+.menu-item{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-radius:6px;font-size:14px;background:transparent;border:none;color:var(--text-dim);text-align:left;}
+.menu-item .lbl{display:flex;align-items:center;gap:10px;}
+.menu-item.active{background:#2a3038;color:var(--gold);}
+.menu-badge{background:var(--gold);color:var(--bg);font-family:monospace;font-size:10px;border-radius:999px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;}
+.menu-foot{padding-top:16px;margin-top:16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:12px;}
+.menu-foot-btn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:6px;font-size:14px;background:transparent;border:none;color:var(--text-dim);text-align:left;}
+.menu-foot-btn:hover,.menu-item:hover{background:#22262e;}
+.close-btn{background:none;border:none;color:var(--text-mute);}
+
+/* cards */
+.card{position:relative;background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:12px 12px 12px 16px;}
+.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold);opacity:.85;border-radius:6px 0 0 6px;}
+.card:hover{border-color:#3a4250;}
+
+/* buttons */
+.btn{font-size:14px;padding:8px 16px;border-radius:6px;border:none;display:inline-flex;align-items:center;gap:6px;justify-content:center;}
+.btn-gold{background:var(--gold);color:var(--bg);font-weight:600;}
+.btn-gold:hover{background:var(--gold-light);}
+.btn-ghost{background:transparent;color:var(--text-dim);border:1px solid var(--border2);}
+.btn-ghost:hover{border-color:#4a5261;}
+.btn-red{background:var(--red);color:var(--bg);font-weight:600;}
+.btn-red:hover{background:#e87f73;}
+.btn-green{background:var(--green);color:var(--bg);font-weight:600;font-size:12px;padding:6px 12px;}
+.btn-outline-red{background:transparent;border:1px solid var(--red);color:var(--red);font-size:12px;padding:6px 12px;}
+.icon-btn{padding:6px;border-radius:6px;border:none;background:transparent;color:var(--text-mute);display:inline-flex;}
+.icon-btn:hover{background:#252b33;}
+.icon-btn.gold:hover{color:var(--gold);}
+.icon-btn.red:hover{color:var(--red);}
+
+/* inputs */
+.input,.textarea,select{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:6px;padding:8px 12px;font-size:14px;color:var(--text);}
+.input:focus,.textarea:focus{outline:none;box-shadow:0 0 0 2px var(--gold);}
+.field{display:flex;flex-direction:column;gap:6px;}
+.field label{font-family:monospace;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-mute);}
+
+/* modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50;}
+.modal-box{background:var(--panel);border:1px solid var(--border2);border-radius:8px;width:100%;max-width:420px;padding:24px;max-height:85vh;overflow-y:auto;}
+.modal-box.wide{max-width:640px;}
+
+/* dictionary */
+.dict-toolbar{padding:20px 24px;border-bottom:1px solid var(--border);background:var(--panel2);}
+@media(min-width:640px){.dict-toolbar{padding:20px 40px;}}
+.dict-toolbar-row{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:12px;}
+@media(min-width:640px){.dict-toolbar-row{flex-direction:row;}}
+.search-wrap{position:relative;flex:1;}
+.search-wrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-faint);}
+.search-wrap input{padding-left:40px;}
+.swap-btn{font-family:monospace;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;text-transform:uppercase;letter-spacing:.03em;border:1px solid var(--border2);border-radius:6px;padding:10px 16px;color:var(--text-dim);background:transparent;white-space:nowrap;}
+.swap-btn:hover{border-color:var(--gold);color:var(--gold);}
+.untrans-row{max-width:900px;margin:12px auto 0;}
+.untrans-row label{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-dim);}
+.letter-head{font-family:monospace;font-size:12px;letter-spacing:.15em;color:var(--gold);margin-bottom:12px;padding-bottom:4px;border-bottom:1px solid var(--border);}
+.entry-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.entry-main{min-width:0;}
+.entry-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+.entry-en{font-family:Georgia,serif;font-size:16px;font-weight:600;color:#F5EFDF;}
+.entry-arrow{color:#5c6472;}
+.entry-yb{font-family:monospace;font-size:14px;color:var(--gold-light);}
+.entry-empty{font-family:monospace;font-size:12px;color:var(--text-faint);font-style:italic;}
+.entry-meaning{font-size:14px;color:var(--text-dim);margin-top:4px;}
+.entry-example{font-size:12px;color:#7d8492;margin-top:4px;font-style:italic;}
+.pending-badge{font-family:monospace;font-size:10px;text-transform:uppercase;color:var(--gold-light);border-radius:4px;padding:2px 6px;border:1px solid rgba(218,177,97,.4);display:inline-flex;align-items:center;gap:4px;}
+
+/* alphabet */
+.alpha-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+@media(min-width:480px){.alpha-grid{grid-template-columns:repeat(5,1fr);}}
+@media(min-width:768px){.alpha-grid{grid-template-columns:repeat(6,1fr);}}
+.alpha-tile{position:relative;background:var(--panel);border:1px solid var(--border);border-radius:8px;aspect-ratio:1/1;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.alpha-tile:hover{border-color:var(--gold);}
+.alpha-tile button{background:none;border:none;color:inherit;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.alpha-letter{font-family:Georgia,serif;font-size:22px;font-weight:600;color:#F5EFDF;}
+.alpha-audio-icon{color:var(--gold);margin-top:6px;}
+.alpha-noaudio{font-family:monospace;font-size:8px;color:#5c6472;margin-top:6px;}
+.alpha-upload{position:absolute;bottom:4px;right:4px;width:20px;height:20px;border-radius:4px;background:#252b33;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-mute);}
+
+/* misc */
+.mb-1{margin-bottom:6px;}.mb-2{margin-bottom:12px;}.mb-3{margin-bottom:24px;}
+.mt-1{margin-top:6px;}.mt-2{margin-top:12px;}.mt-3{margin-top:24px;}
+.flex-between{display:flex;align-items:center;justify-content:space-between;}
+.flex-row{display:flex;align-items:center;}
+.gap-1{gap:6px;}.gap-2{gap:10px;}
+.space-y > * + *{margin-top:10px;}
+.space-y-lg > * + *{margin-top:40px;}
+.muted{color:var(--text-mute);}
+.center-pad{text-align:center;padding:60px 0;font-size:14px;color:var(--text-mute);}
+h2.section-title{font-family:Georgia,serif;font-size:20px;color:#F5EFDF;margin:0;}
+.err-box{background:#252b1f;border:1px solid rgba(218,177,97,.4);border-radius:6px;padding:14px;}
+.spin{animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.hidden{display:none !important;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ================= tiny DOM helper ================= */
+function h(tag, attrs) {
+  var el = document.createElement(tag);
+  var children = Array.prototype.slice.call(arguments, 2);
+  if (attrs) {
+    for (var k in attrs) {
+      var v = attrs[k];
+      if (v === false || v == null) continue;
+      if (k === 'class') el.className = v;
+      else if (k === 'html') el.innerHTML = v;
+      else if (k.indexOf('on') === 0 && typeof v === 'function') el.addEventListener(k.slice(2).toLowerCase(), v);
+      else if (k === 'style' && typeof v === 'object') { for (var sk in v) el.style[sk] = v[sk]; }
+      else if (k === 'checked' || k === 'disabled') { el[k] = !!v; }
+      else el.setAttribute(k, v);
+    }
+  }
+  function addChild(c) {
+    if (c == null || c === false) return;
+    if (Array.isArray(c)) { c.forEach(addChild); return; }
+    if (typeof c === 'string' || typeof c === 'number') el.appendChild(document.createTextNode(c));
+    else el.appendChild(c);
+  }
+  children.forEach(addChild);
+  return el;
+}
+function icon(name, size, extraStyle) {
+  var paths = ICONS[name] || '';
+  var ns = "http://www.w3.org/2000/svg";
+  var svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("width", size || 16);
+  svg.setAttribute("height", size || 16);
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("fill", "none");
+  svg.setAttribute("stroke", "currentColor");
+  svg.setAttribute("stroke-width", "2");
+  svg.setAttribute("stroke-linecap", "round");
+  svg.setAttribute("stroke-linejoin", "round");
+  svg.style.flexShrink = "0";
+  if (extraStyle) for (var k in extraStyle) svg.style[k] = extraStyle[k];
+  svg.innerHTML = paths;
+  return svg;
+}
+var ICONS = {
+  search:'<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+  plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+  pencil:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  trash:'<path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>',
+  x:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+  book:'<path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2Z"/><path d="M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8Z"/>',
+  swap:'<path d="M3 7h13"/><path d="M13 3l4 4-4 4"/><path d="M21 17H8"/><path d="M11 21l-4-4 4-4"/>',
+  menu:'<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>',
+  globe:'<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20"/>',
+  shield:'<path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6Z"/>',
+  users:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  music:'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+  cap:'<path d="M22 10L12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/>',
+  info:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>',
+  volume:'<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>',
+  upload:'<path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M4 21h16"/>',
+  check:'<polyline points="20 6 9 17 4 12"/>',
+  xcircle:'<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
+  userplus:'<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>',
+  userminus:'<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/>',
+  clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  chevron:'<polyline points="9 18 15 12 9 6"/>',
+  login:'<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>',
+  loader:'<path d="M21 12a9 9 0 1 1-6.219-8.56"/>'
+};
+
+/* ================= storage ================= */
+function skey(key, shared){ return (shared?"shared:":"personal:") + key; }
+function sget(key, shared, fallback){
+  try { var raw = localStorage.getItem(skey(key, shared)); if (raw===null) return fallback; return JSON.parse(raw); }
+  catch(e){ return fallback; }
+}
+function sset(key, shared, value){
+  try { localStorage.setItem(skey(key, shared), JSON.stringify(value)); return true; }
+  catch(e){ return false; }
+}
+var ENTRIES_KEY="yanban-dictionary-entries", CONFIG_KEY="yanban-app-config",
+    IDENTITY_KEY="yanban-my-identity", LANG_KEY="yanban-my-lang",
+    LESSONS_KEY="yanban-lessons", GRAMMAR_KEY="yanban-grammar",
+    SONGS_KEY="yanban-songs", ABOUT_KEY="yanban-about",
+    ALPHABET_AUDIO_KEY="yanban-alphabet-audio", BIBLE_SEED_FLAG_KEY="yanban-bible-words-seeded-v1";
+
+function uid(prefix){ return (prefix||"") + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function letterOf(str){ var c=(str||"").trim().charAt(0).toUpperCase(); return c || "#"; }
+
+/* ================= seed data ================= */
+var SEED_WORDS = ["a","about","above","abroad","absence","absolute","absolutely","accept","acceptable","access","accident","accompany","according","account","accurate","accuse","achieve","achievement","acknowledge","acquire","across","act","action","active","activity","actor","actress","actual","actually","adapt","add","addition","additional","address","adequate","adjust","admire","admission","admit","adopt","adult","advance","advanced","advantage","adventure","advertise","advertisement","advice","advise","affair","affect","afford","afraid","after","afternoon","afterward","again","against","age","agency","agenda","agent","aggressive","ago","agree","agreement","ahead","aid","aim","air","aircraft","airline","airport","alarm","album","alcohol","alert","alike","alive","all","allow","almost","alone","along","already","also","alter","although","always","amazed","amazing","ambassador","ambition","among","amount","analysis","ancient","and","anger","angle","angry","animal","ankle","anniversary","announce","annoy","annual","another","answer","ant","anxious","any","anybody","anyone","anything","anyway","anywhere","apart","apartment","apologize","app","apparent","apparently","appeal","appear","appearance","apple","application","apply","appoint","appointment","appreciate","approach","appropriate","approval","approve","approximately","april","architect","area","argue","argument","arise","arm","armed","army","around","arrange","arrangement","arrest","arrival","arrive","art","article","artificial","artist","as","ashamed","ask","asleep","aspect","assess","assign","assist","assistant","associate","association","assume","assure","at","athlete","atmosphere","attach","attack","attempt","attend","attention","attitude","attract","attraction","attractive","audience","audio","august","aunt","author","authority","automatic","autumn","available","average","avoid","award","aware","away","awful","baby","back","background","backpack","backward","bacteria","bad","badge","badly","badminton","bag","baker","balance","ball","ban","banana","band","bank","bar","barber","barely","barrel","barrier","base","baseball","basic","basically","basis","basket","basketball","bath","bathroom","battery","battle","be","beach","bean","bear","beard","beat","beautiful","beauty","because","become","bed","bedroom","bee","beef","before","beg","begin","beginning","behave","behavior","behind","being","belief","believe","bell","belong","below","belt","bench","bend","beneath","benefit","bent","beside","best","bet","better","between","beyond","bicycle","big","bike","bill","billion","bin","bind","biology","bird","birth","birthday","bit","bite","bitter","black","blackboard","blade","blame","blank","blanket","blast","blend","bless","blind","block","blog","blood","blow","blue","board","boat","body","boil","bold","bomb","bond","bone","bonus","book","boot","border","bore","bored","born","borrow","boss","both","bother","bottle","bottom","boundary","bowl","box","boxing","boy","bracelet","brain","brake","branch","brand","brave","bread","break","breakfast","breast","breath","breathe","breed","bridge","brief","bright","brilliant","bring","broad","broadcast","broken","broom","brother","brown","browser","brush","budget","bug","build","building","bullet","bunch","burden","burn","burst","bury","bus","bush","business","busy","but","butter","butterfly","button","buy","by","cabin","cabinet","cable","cage","cake","calculate","calendar","call","calm","camera","camp","campaign","campus","can","cancel","cancer","candidate","candle","candy","cap","capable","capacity","capital","captain","capture","car","carbon","card","care","career","careful","careless","carry","cart","carve","case","cash","cashier","cast","cat","catch","category","cause","cave","ceiling","celebrate","celebration","celebrity","cell","cent","center","central","century","ceremony","certain","certainly","chain","chair","chairman","chalk","challenge","chamber","champion","championship","chance","change","channel","chapter","character","characteristic","charge","charger","charity","chart","chase","chat","cheap","cheat","check","cheek","cheese","chef","chemical","chemistry","chest","chicken","chief","child","childhood","chili","chin","chip","chocolate","choice","choose","chop","chopsticks","chorus","church","cigarette","circle","circuit","circumstance","cite","citizen","city","civil","civilization","claim","clarify","class","classic","classify","classroom","clause","clean","clear","clearly","clever","click","client","cliff","climate","climb","climbing","clock","close","closed","closet","cloth","clothes","clothing","cloud","cloudy","club","clue","cluster","coach","coal","coast","coat","coconut","code","coffee","coin","cold","collapse","colleague","collect","collection","college","colony","color","column","combination","combine","come","comedy","comfort","comfortable","command","comment","commercial","commission","commit","commitment","committee","common","communicate","communication","community","company","compare","comparison","compete","competition","competitive","competitor","complain","complaint","complete","completely","complex","complicated","component","compose","composition","comprehensive","compute","computer","concentrate","concept","concern","concerned","concert","conclude","conclusion","concrete","condition","conditioner","conduct","conference","confidence","confident","confirm","conflict","confuse","confused","confusion","congratulate","congress","connect","connection","conscious","consequence","conservative","consider","considerable","consist","consistent","constant","constantly","constitute","constitution","construct","construction","consult","consume","consumer","contact","contain","container","contemporary","content","contest","context","continent","continue","continuous","contract","contrast","contribute","contribution","control","controversy","convenient","conversation","convert","convince","cook","cookie","cool","cooperate","cope","copper","copy","core","corn","corner","corporate","corporation","correct","correspond","cost","costume","cottage","cotton","couch","could","council","count","counter","country","county","couple","courage","course","court","cousin","cover","cow","crab","crack","craft","crash","crawl","crazy","cream","create","creation","creative","creature","credit","crew","cricket","crime","criminal","crisis","criteria","critic","critical","criticism","criticize","crocodile","crop","cross","crowd","crown","crucial","crude","cruel","crush","cry","crystal","cultural","culture","cup","cure","curious","currency","current","currently","curriculum","curtain","curve","custom","customer","cut","cycle","cycling","dad","daily","damage","dance","dancer","danger","dangerous","dare","dark","darkness","data","database","date","daughter","dawn","day","dead","deadline","deal","dear","death","debate","debit","debt","decade","december","decent","decide","decision","declare","decline","decorate","decrease","deep","deeply","deer","default","defeat","defend","defense","define","definitely","definition","degree","delay","deliberate","delicate","delicious","delight","deliver","delivery","demand","democracy","democratic","demonstrate","deny","department","departure","depend","deposit","depression","depth","derive","describe","description","desert","deserve","design","designer","desire","desk","desperate","despite","dessert","destination","destroy","detail","detect","determine","develop","developer","development","device","devote","diagram","dial","diamond","diary","dictionary","die","diet","differ","difference","different","difficult","difficulty","dig","digital","dignity","dimension","dining","dinner","diploma","diplomat","direct","direction","directly","director","dirt","dirty","disagree","disappear","disappoint","disappointed","disaster","discipline","discount","discourse","discover","discovery","discuss","discussion","disease","dish","dishonest","dislike","dismiss","display","distance","distant","distinct","distinction","distinguish","distribute","distribution","district","disturb","dive","diverse","diversity","divide","division","divorce","do","doctor","document","dog","dollar","dolphin","domain","domestic","dominant","dominate","donate","door","dormitory","dot","double","doubt","down","download","downtown","dozen","draft","drag","drama","dramatic","draw","drawer","drawing","dream","dress","drift","drink","drive","driver","drop","drought","drug","drum","dry","duck","due","during","dust","duty","each","eager","eagle","ear","early","earn","earring","earth","earthquake","ease","east","eastern","easy","eat","economic","economics","economy","edge","edit","edition","editor","educate","education","effect","effective","efficient","effort","egg","eight","eighteen","eighty","either","elbow","elderly","elect","election","electric","electricity","elegant","element","elephant","eleven","eliminate","elite","else","elsewhere","email","embarrass","embarrassed","embassy","embrace","emerge","emergency","emotion","emotional","emphasis","employ","employee","employer","employment","empty","enable","encounter","encourage","end","enemy","energy","engage","engine","engineer","english","enhance","enjoy","enormous","enough","ensure","enter","enterprise","entertain","entertainment","enthusiasm","entire","entirely","entrance","entrepreneur","entry","envelope","environment","environmental","episode","equal","equally","equation","equipment","era","eraser","error","escape","especially","essay","essential","establish","estate","estimate","ethical","ethnic","evaluate","even","evening","event","eventually","ever","every","everybody","everyday","everyone","everything","everywhere","evidence","evil","evolution","evolve","exact","exactly","exam","examine","example","exceed","excellent","except","exception","exchange","excite","excited","exciting","exclude","exclusive","excuse","execute","executive","exercise","exhibit","exhibition","exist","existence","exit","expand","expansion","expect","expectation","expense","expensive","experience","experiment","expert","explain","explanation","explode","explore","explosion","export","expose","exposure","express","expression","extend","extension","extensive","extent","external","extra","extraordinary","extreme","extremely","eye","eyebrow","eyelash","fabric","face","facility","fact","factor","factory","faculty","fade","fail","failure","fair","fairly","faith","fall","false","familiar","family","famous","fan","fantasy","far","farm","farmer","fashion","fast","fat","fate","father","fault","favor","favorite","fear","feather","feature","february","federal","fee","feed","feel","feeling","fellow","female","fence","festival","fever","few","fiance","fiber","fiction","field","fifteen","fifth","fifty","fight","figure","file","fill","film","final","finally","finance","financial","find","fine","finger","finish","fire","firm","first","fish","fishing","fit","fitness","five","fix","flag","flame","flat","flavor","flee","flesh","flight","float","flood","floor","flow","flower","fluid","fly","focus","fog","foggy","fold","folder","folk","follow","following","food","fool","foolish","foot","football","for","force","forecast","foreign","forest","forever","forget","fork","form","formal","format","formation","former","formula","forth","fortune","forty","forum","forward","found","foundation","founder","four","fourteen","fourth","fox","frame","framework","free","freedom","freeze","french","frequency","frequent","fresh","friday","friend","friendly","friendship","frog","from","front","frontier","fruit","frustrate","fry","fuel","full","fully","fun","function","fund","fundamental","funding","funeral","funny","fur","furniture","further","furthermore","future","gain","galaxy","gallery","game","gang","gap","garage","garden","garlic","gas","gasoline","gate","gather","gay","gaze","gear","gender","gene","general","generally","generate","generation","generous","genetic","genius","gentle","gentleman","genuine","geography","germ","gesture","get","ghost","giant","gift","ginger","girl","girlfriend","give","given","glad","glance","glass","glasses","global","glory","glove","go","goal","goat","god","gold","golden","golf","good","goods","govern","government","governor","grab","grade","gradually","graduate","grain","gram","grand","grandfather","grandmother","grant","grape","graph","grass","grateful","grave","gray","great","green","greet","grey","grief","grill","grip","grocery","gross","ground","group","grow","growth","guarantee","guard","guess","guest","guide","guideline","guilt","guilty","guitar","gun","guy","gym","habit","habitat","hair","half","hall","hand","handful","handle","hang","happen","happy","harbor","hard","hardly","hardware","harm","hat","hate","have","he","head","headline","headphone","headquarters","health","healthy","hear","hearing","heart","heat","heater","heaven","heavily","heavy","heel","height","helicopter","hell","hello","help","helpful","hence","her","herb","here","heritage","hero","herself","hey","hi","hide","high","highly","highway","hill","him","himself","hip","hire","his","historian","historic","historical","history","hit","hockey","hold","hole","holiday","holy","home","homework","honest","honey","honor","hook","hop","hope","hopeful","horizon","horn","horror","horse","hospital","host","hot","hotel","hour","house","household","housing","how","however","huge","human","humanity","humble","humid","humidity","humor","hundred","hunger","hungry","hunt","hunter","hurricane","hurry","hurt","husband","hypothesis","ice","idea","ideal","identical","identification","identify","identity","ignore","ill","illegal","illness","illustrate","image","imagination","imagine","immediate","immediately","immigrant","immigration","impact","impatient","implement","implication","imply","import","importance","important","impose","impossible","impress","impression","improve","improvement","in","incentive","incident","include","including","income","incorporate","increase","increasingly","incredible","indeed","independence","independent","index","indicate","indication","indirect","individual","industrial","industry","infant","infection","inflation","influence","inform","information","ingredient","initial","initially","initiative","injure","injury","inner","innocent","inquiry","insect","inside","insight","insist","inspire","install","instance","instead","institution","institutional","instruction","instructor","instrument","insurance","intellectual","intelligence","intend","intense","intensity","intention","interaction","interest","interested","interesting","internal","international","internet","interpret","interpretation","interview","into","introduce","introduction","invasion","invent","invest","investigate","investigation","investment","investor","invite","invoice","involve","involved","involvement","iron","island","issue","it","item","its","itself","jacket","jail","january","jar","jaw","jazz","jealous","jeans","jewelry","job","jogging","join","joint","joke","journal","journalist","journey","joy","judge","judgment","juice","july","jump","june","junior","jury","just","justice","justify","keen","keep","key","keyboard","kick","kid","kill","killer","kind","king","kiss","kitchen","knee","knife","knock","know","knowledge","known","lab","label","labor","laboratory","lack","ladder","lady","lake","lamp","land","landscape","language","lap","laptop","large","largely","last","late","later","latter","laugh","laughter","launch","law","lawn","lawsuit","lawyer","lay","layer","lead","leader","leadership","leading","leaf","league","lean","learn","least","leather","leave","lecture","left","leg","legacy","legal","legend","legislation","legitimate","leisure","lemon","lend","length","less","lesson","let","letter","level","liberal","library","license","lie","life","lifestyle","lifetime","lift","light","lightning","like","likely","lime","limit","limited","line","link","lion","lip","liquid","list","listen","literally","literary","literature","little","live","liver","living","load","loan","local","locate","location","lock","log","logic","login","logout","lonely","long","look","loose","lose","loss","lost","lot","lots","loud","love","lovely","lover","low","lower","loyal","luck","lucky","luggage","lunch","lung","luxury","machine","mad","magazine","magic","mail","main","mainly","maintain","maintenance","major","majority","make","maker","makeup","male","mall","man","manage","management","manager","mango","manner","manufacturer","manufacturing","many","map","march","margin","mark","market","marketing","marriage","marry","mask","mass","massive","master","match","material","math","matter","mattress","maximum","may","maybe","mayor","me","meal","mean","meaning","meanwhile","measure","meat","mechanism","medal","media","medical","medication","medicine","medium","meet","meeting","member","membership","memory","mental","mention","menu","mere","merely","merge","mess","message","metal","method","microphone","middle","midnight","might","military","milk","million","mind","mine","minimum","minister","minor","minority","minute","miracle","mirror","miss","missile","mission","mist","mistake","mix","mixture","mode","model","moderate","modern","modest","modify","mom","moment","monday","money","monitor","monkey","month","monthly","mood","moon","moral","more","moreover","morning","mortgage","mosquito","most","mostly","mother","motion","motivate","motivation","motor","motorcycle","mount","mountain","mouse","mouth","move","movement","movie","mud","multiple","murder","muscle","museum","music","musical","musician","must","mutual","my","myself","mysterious","mystery","myth","nail","naked","name","napkin","narrative","narrow","nation","national","native","natural","naturally","nature","navy","near","nearby","nearly","necessarily","necessary","neck","necklace","need","negative","negotiate","negotiation","neighbor","neighborhood","neither","nephew","nerve","nervous","net","network","never","nevertheless","new","newly","news","newspaper","next","nice","niece","night","nightmare","nine","nineteen","ninety","nobody","nod","noise","noisy","nominate","none","nonetheless","noodles","noon","nor","normal","normally","north","northern","nose","not","note","notebook","nothing","notice","notion","novel","novelist","november","now","nowhere","nuclear","number","numerous","nurse","nut","object","objective","obligation","observation","observe","observer","obtain","obvious","obviously","occasion","occasionally","occupation","occupy","occur","ocean","odd","of","off","offense","offensive","offer","office","officer","official","often","oh","oil","ok","okay","old","olive","on","once","one","ongoing","onion","online","only","onto","open","opening","operate","operating","operation","operator","opinion","opponent","opportunity","oppose","opposite","opposition","option","or","orange","order","ordinary","organic","organization","organize","orientation","origin","original","originally","other","otherwise","ought","our","ourselves","out","outcome","outside","oven","over","overall","overcome","overlook","owe","owl","own","owner","ownership","pace","pack","package","page","pain","painful","paint","painter","painting","pair","pajama","palace","pale","palm","pan","panel","panic","pants","papaya","paper","parent","park","parking","parliament","parrot","part","participant","participate","participation","particular","particularly","partly","partner","partnership","party","pass","passage","passenger","passion","passport","password","past","pastor","patch","path","patience","patient","pattern","pause","pay","payment","peace","peaceful","peak","peer","pen","penalty","pencil","pension","people","pepper","per","perceive","percentage","perception","perfect","perform","performance","perhaps","period","permanent","permission","permit","person","personal","personality","personally","personnel","perspective","persuade","pet","phase","phenomenon","philosophy","phone","photo","photograph","photographer","phrase","physical","physician","physics","piano","pick","picture","pie","piece","pig","pile","pillow","pilot","pin","pine","pineapple","pink","pipe","pitch","place","plan","plane","planet","planning","plant","plastic","plate","platform","play","player","pleasant","please","pleasure","plenty","plot","plus","pocket","poem","poet","poetry","point","pole","police","policy","polite","political","politically","politician","politics","poll","pollution","pool","poor","pop","popular","population","porch","pork","port","portion","portrait","pose","position","positive","possess","possibility","possible","possibly","post","pot","potato","potential","pound","pour","poverty","powder","power","powerful","practical","practice","pray","prayer","precisely","predict","prefer","preference","pregnant","preparation","prepare","presence","present","president","presidential","press","pressure","presumably","pretend","pretty","prevent","previous","previously","price","pride","priest","primarily","primary","prime","principal","principle","print","printer","prior","priority","prison","prisoner","privacy","private","probably","problem","procedure","proceed","process","produce","producer","product","production","profession","professional","professor","profile","profit","program","programmer","progress","project","prominent","promise","promote","prompt","proof","proper","properly","property","proportion","proposal","propose","prosecutor","prospect","protect","protection","protein","protest","proud","prove","provide","province","provision","psychological","psychologist","psychology","public","publication","publicly","publish","publisher","pull","punch","punishment","purchase","pure","purple","purpose","purse","pursue","push","put","qualify","quality","quarter","queen","question","quick","quickly","quiet","quietly","quit","quite","quote","rabbit","race","racial","radical","radio","rail","rain","rainy","raise","range","rank","rapid","rapidly","rare","rarely","rat","rate","rather","raw","reach","react","reaction","read","reader","reading","ready","real","reality","realize","really","reason","reasonable","recall","receipt","receive","recent","recently","recipe","recognition","recognize","recommend","recommendation","record","recover","recovery","recruit","red","reduce","reduction","refer","referee","reference","reflect","reform","refrigerator","refugee","refuse","regard","regarding","regardless","region","regional","register","regular","regularly","regulate","regulation","reinforce","reject","relate","relation","relationship","relative","relatively","relax","relaxed","release","relevant","relief","religion","religious","rely","remain","remaining","remarkable","remember","remind","remote","remove","repeat","repeatedly","replace","reply","report","reporter","represent","representation","representative","republic","republican","reputation","request","require","requirement","research","researcher","resemble","reservation","resident","resist","resolution","resolve","resort","resource","respect","respective","respond","response","responsibility","responsible","rest","restaurant","restore","restriction","result","retain","retire","retirement","return","reveal","revenue","review","revolution","rhythm","rice","rich","rid","ride","rifle","right","rights","ring","rise","risk","river","road","rock","role","roll","romantic","roof","room","root","rope","rough","roughly","round","route","routine","row","rub","rude","rugby","rule","ruler","run","running","rural","rush","sacred","sad","safe","safety","sake","salad","salary","sale","sales","salt","same","sample","sanction","sand","satellite","satisfaction","satisfied","satisfy","saturday","sauce","save","saving","say","scale","scandal","scared","scarf","scenario","scene","schedule","scheme","scholar","scholarship","school","science","scientific","scientist","scope","score","scream","screen","script","sea","search","season","seat","seatbelt","second","secret","secretary","section","sector","secure","security","see","seed","seek","seem","segment","seize","select","selection","self","selfish","sell","senate","senator","send","senior","sense","sensitive","sentence","separate","sequence","series","serious","seriously","serve","server","service","session","set","setting","settle","settlement","seven","seventeen","seventy","several","severe","sex","sexual","shade","shadow","shake","shall","shampoo","shape","share","shark","sheep","sheet","shelf","shift","shine","ship","shirt","shock","shoe","shoot","shooting","shop","shopping","shore","short","shortly","shot","should","shoulder","shout","show","shower","shrimp","shrug","shut","shy","sibling","sick","side","sigh","sight","sign","signal","significant","significantly","silence","silent","silk","silver","similar","similarly","simple","simply","since","sing","singer","single","sink","sir","sister","sit","site","situation","six","sixteen","sixty","size","skating","skiing","skill","skin","skirt","sky","slave","sleep","sleepy","slice","slide","slight","slightly","slip","slow","small","smart","smell","smile","smoke","smooth","snack","snake","snap","snow","so","soap","soccer","social","society","sock","sofa","soft","software","soil","solar","soldier","solid","solution","solve","some","somebody","somehow","someone","something","sometimes","somewhat","somewhere","son","song","soon","sophisticated","sorry","sort","soul","sound","soup","source","south","southern","space","speak","speaker","special","specialist","species","specific","specifically","specify","speech","speed","spend","sphere","spider","spirit","spiritual","spite","split","spokesman","spoon","sport","spot","spread","spring","square","stability","stable","stadium","staff","stage","stair","stake","stand","standard","star","stare","start","startup","state","statement","station","statistics","status","stay","steady","steal","steel","step","stick","still","stimulate","stir","stock","stomach","stone","stop","storage","store","storm","stormy","story","stove","straight","strange","stranger","strategic","strategy","stream","street","strength","strengthen","stress","stretch","strike","string","strip","stroke","strong","structure","struggle","student","studio","study","stuff","stupid","style","subject","submit","subscriber","subsequent","substance","substantial","subway","succeed","success","successful","successfully","such","sudden","suddenly","sue","suffer","sufficient","sugar","suggest","suggestion","suicide","suit","suitcase","summer","summit","sun","sunday","sunny","super","supermarket","supply","support","supporter","suppose","sure","surface","surfing","surgery","surprise","surprised","surround","survey","survival","survive","survivor","suspect","suspend","sustain","swear","sweater","sweep","sweet","swim","swimming","swing","switch","symbol","symptom","system","table","tablet","tackle","tail","tailor","take","tale","talent","talk","tall","tank","tap","tape","target","task","taste","tax","taxi","taxpayer","tea","teach","teacher","teaching","team","tear","technical","technique","technology","teen","teenager","telephone","television","tell","temperature","temporary","ten","tend","tendency","tennis","tension","tent","term","terms","terrible","territory","terror","terrorism","terrorist","test","testify","testimony","testing","text","textbook","than","thank","thanks","that","the","theater","their","them","theme","themselves","then","theory","therapy","there","therefore","these","they","thick","thigh","thin","thing","think","thinking","third","thirsty","thirteen","thirty","this","those","though","thought","thousand","threat","threaten","three","throat","through","throughout","throw","thumb","thunder","thursday","thus","ticket","tide","tie","tiger","tight","time","tiny","tip","tire","tired","tissue","title","to","tobacco","today","toe","together","tomorrow","tone","tongue","tonight","too","tool","tooth","toothbrush","toothpaste","top","topic","toss","total","touch","tough","tour","tourist","tournament","toward","towel","tower","town","toy","trace","track","trade","tradition","traditional","traffic","tragedy","trail","train","training","transfer","transform","transformation","transition","translate","transportation","trap","trash","travel","treat","treatment","treaty","tree","tremendous","trend","trial","tribe","trick","trigger","trip","troop","trophy","trouble","trousers","truck","true","truly","trust","truth","try","tube","tuesday","tuition","tunnel","turn","turtle","tv","twelve","twenty","twice","twin","twist","two","type","typhoon","typical","typically","ugly","ultimate","ultimately","umbrella","unable","uncle","uncomfortable","under","undergo","understand","understanding","underwear","unfortunately","uniform","union","unique","unit","united","universal","universe","university","unknown","unless","unlike","unlikely","until","unusual","up","update","upload","upon","upper","urban","urge","us","use","used","useful","user","username","usual","usually","utility","vacation","valid","valley","valuable","value","van","variable","variation","variety","various","vary","vast","vegetable","vehicle","venture","version","versus","very","vessel","veteran","via","victim","victory","video","view","viewer","village","violate","violence","violent","virtual","virtue","virus","visible","vision","visit","visitor","visual","vital","vitamin","voice","volcano","volleyball","volume","volunteer","vote","voter","voting","wage","waist","wait","waiter","waitress","wake","walk","wall","wallet","want","war","warm","warn","warning","wash","washing","waste","watch","water","watermelon","wave","way","we","weak","wealth","wealthy","weapon","wear","weather","web","website","wedding","wednesday","week","weekend","weekly","weigh","weight","weird","welcome","welfare","well","west","western","wet","whale","what","whatever","wheel","when","whenever","where","whereas","whether","which","while","whisper","white","whiteboard","who","whole","whom","whose","why","wide","widely","widespread","wife","wifi","wild","will","willing","win","wind","window","windy","wine","wing","winner","winter","wire","wisdom","wise","wish","with","withdraw","within","without","witness","wolf","woman","wonder","wonderful","wood","wooden","wool","word","work","worker","working","workplace","workshop","world","worm","worried","worry","worth","would","wound","wrap","wrestling","wrist","write","writer","writing","wrong","yard","yeah","year","yearly","yell","yellow","yes","yesterday","yet","yield","yoga","yogurt","you","young","your","yours","yourself","youth","zero","zipper","zone","zoo"];
+
+var BIBLE_NAMES=["Adam","Eve","Cain","Abel","Seth","Enosh","Kenan","Mahalalel","Jared","Enoch","Methuselah","Lamech","Noah","Shem","Ham","Japheth","Canaan","Cush","Mizraim","Put","Nimrod","Peleg","Reu","Serug","Nahor","Terah","Abram","Abraham","Sarai","Sarah","Hagar","Ishmael","Isaac","Rebekah","Laban","Bethuel","Esau","Jacob","Israel","Leah","Rachel","Bilhah","Zilpah","Reuben","Simeon","Levi","Judah","Dan","Naphtali","Gad","Asher","Issachar","Zebulun","Dinah","Joseph","Benjamin","Er","Onan","Shelah","Perez","Zerah","Tamar","Ephraim","Manasseh","Potiphar","Potipherah","Asenath","Jochebed","Amram","Moses","Aaron","Miriam","Nadab","Abihu","Eleazar","Ithamar","Phinehas","Jethro","Reuel","Zipporah","Gershom","Eliezer","Hobab","Caleb","Joshua","Hur","Bezalel","Oholiab","Korah","Dathan","Abiram","Balaam","Balak","Og","Sihon","Rahab","Achan","Othniel","Ehud","Shamgar","Deborah","Barak","Jael","Gideon","Jerubbaal","Abimelech","Tola","Jair","Jephthah","Ibzan","Elon","Abdon","Samson","Manoah","Delilah","Micah","Elimelech","Naomi","Ruth","Orpah","Boaz","Obed","Jesse","Eliab","Abinadab","Shammah","David","Saul","Kish","Jonathan","Merab","Michal","Abner","Ishbosheth","Abigail","Nabal","Ahinoam","Bathsheba","Uriah","Nathan","Amnon","Absalom","Adonijah","Solomon","Zadok","Abiathar","Joab","Abishai","Asahel","Hushai","Ahithophel","Shimei","Mephibosheth","Ziba","Rehoboam","Jeroboam","Abijah","Asa","Baasha","Elah","Zimri","Omri","Ahab","Jezebel","Ahaziah","Jehoram","Jehu","Jehoahaz","Jehoash","Zechariah","Shallum","Menahem","Pekahiah","Pekah","Hoshea","Jehoshaphat","Athaliah","Joash","Amaziah","Uzziah","Azariah","Jotham","Ahaz","Hezekiah","Amon","Josiah","Jehoiakim","Jehoiachin","Zedekiah","Elijah","Elisha","Obadiah","Micaiah","Naaman","Gehazi","Jehoiada","Huldah","Isaiah","Jeremiah","Baruch","Ezekiel","Daniel","Shadrach","Meshach","Abednego","Hananiah","Mishael","Belshazzar","Nebuchadnezzar","Nebuzaradan","Cyrus","Darius","Ahasuerus","Xerxes","Esther","Mordecai","Haman","Vashti","Zerubbabel","Ezra","Nehemiah","Sanballat","Tobiah","Haggai","Malachi","Job","Eliphaz","Bildad","Zophar","Elihu","Hosea","Gomer","Joel","Amos","Jonah","Nahum","Habakkuk","Zephaniah","Melchizedek","Lot","Milcah","Ephron","Keturah","Zimran","Jokshan","Medan","Midian","Ishbak","Shuah","Uz","Buz","Kemuel","Bethuel","Jemimah","Keziah","Keren-happuch","Mary","Elizabeth","John the Baptist","Jesus","Simon Peter","Andrew","James","John","Philip","Bartholomew","Nathanael","Thomas","Matthew","Levi","Thaddaeus","Simon the Zealot","Judas Iscariot","Mary Magdalene","Martha","Lazarus","Nicodemus","Joseph of Arimathea","Pontius Pilate","Herod","Herod Antipas","Herod Agrippa","Caiaphas","Annas","Barabbas","Simon of Cyrene","Stephen","Saul","Paul","Barnabas","Silas","Timothy","Titus","Luke","Mark","Priscilla","Aquila","Apollos","Lydia","Cornelius","Ananias","Sapphira","Gamaliel","Jude","Anna","Elymas","Sergius Paulus","Felix","Festus","Agrippa","Bernice","Onesimus","Philemon","Epaphras","Demas","Archippus","Tychicus","Trophimus","Erastus","Sosthenes","Crispus","Gaius","Phoebe","Junia","Andronicus","Epaphroditus","Clement","Diotrephes","Demetrius","Zacchaeus","Bartimaeus","Jairus","Malchus","Cleopas","Salome","Susanna","Joanna","Nicanor","Prochorus","Timon","Parmenas","Nicolas"];
+var BIBLE_PLACES=["Eden","Nod","Ararat","Babel","Babylon","Ur","Haran","Canaan","Shechem","Bethel","Ai","Sodom","Gomorrah","Zoar","Mamre","Hebron","Beersheba","Gerar","Moriah","Peniel","Succoth","Egypt","Goshen","Pithom","Rameses","Midian","Sinai","Horeb","Rephidim","Kadesh","Kadesh-barnea","Edom","Moab","Ammon","Bashan","Gilead","Jordan","Jericho","Gibeon","Ashkelon","Gaza","Gath","Ekron","Ashdod","Shiloh","Mizpah","Ramah","Gilgal","Bethlehem","Ephrath","Jerusalem","Zion","Ziklag","Endor","Gilboa","Jezreel","Samaria","Megiddo","Carmel","Tishbe","Zarephath","Shunem","Dothan","Nineveh","Tarshish","Joppa","Damascus","Aram","Assyria","Chaldea","Susa","Persia","Media","Elam","Padan-aram","Tyre","Sidon","Phoenicia","Philistia","Ephesus","Smyrna","Pergamum","Thyatira","Sardis","Philadelphia","Laodicea","Antioch","Iconium","Lystra","Derbe","Tarsus","Cilicia","Cyprus","Crete","Malta","Rome","Corinth","Athens","Thessalonica","Berea","Philippi","Colossae","Galatia","Cappadocia","Bithynia","Pontus","Macedonia","Achaia","Nazareth","Capernaum","Bethsaida","Chorazin","Cana","Tiberias","Galilee","Judea","Perea","Decapolis","Gadara","Emmaus","Bethany","Bethphage","Gethsemane","Golgotha","Calvary","Kidron","Hinnom","Patmos","Havilah","Pishon","Gihon","Tigris","Euphrates","Nile","Jabbok","Kishon","Arnon","Jabesh-gilead","Mahanaim","Penuel","Tirzah","Beth-shan","Beth-shemesh","Kiriath-jearim","Gibeah","Ramoth-gilead","Hazor","Kedesh","Laish","Ashtaroth","Golan","Zarethan","Zoan","Migdol","Baal-zephon","Marah","Elim","Taberah","Kibroth-hattaavah","Hazeroth","Dibon","Nebo","Pisgah","Shittim","Ebal","Gerizim","Kirjath-sepher","Debir","Anathoth","Nob","Adullam","Keilah","Maon","En-gedi","Ziph","Aphek","Dor","Rehob","Ijon","Michmash","Aijalon","Abel-meholah"];
+var BIBLE_BOOKS=["Genesis","Exodus","Leviticus","Numbers","Deuteronomy","Joshua","Judges","Samuel","Kings","Chronicles","Nehemiah","Esther","Proverbs","Ecclesiastes","Lamentations","Ezekiel","Hosea","Obadiah","Micah","Habakkuk","Zephaniah","Zechariah","Matthew","Romans","Corinthians","Galatians","Ephesians","Philippians","Colossians","Thessalonians","Philemon","Hebrews","Revelation"];
+var BIBLE_THEOLOGY=["covenant","redemption","salvation","atonement","sacrifice","offering","altar","tabernacle","temple","sanctuary","holy","holiness","righteousness","righteous","sin","sinner","iniquity","transgression","repentance","repent","forgiveness","forgive","grace","mercy","faith","faithful","faithfulness","belief","trust","hope","worship","praise","prayer","fasting","blessing","curse","cursed","prophecy","prophet","prophesy","vision","revelation","gospel","evangelism","evangelist","disciple","apostle","apostleship","ministry","minister","priest","priesthood","levite","scribe","pharisee","sadducee","elder","deacon","bishop","overseer","shepherd","flock","lamb","pastor","congregation","assembly","synagogue","church","kingdom","eternal life","resurrection","resurrect","ascension","incarnation","messiah","christ","anointed","anointing","baptism","baptize","communion","passover","unleavened bread","feast","festival","sabbath","jubilee","tithe","firstfruits","firstborn","circumcision","circumcise","gentile","israelite","hebrew","promised land","exodus","wilderness","manna","cherubim","seraphim","angel","archangel","demon","devil","satan","evil spirit","unclean spirit","exorcism","miracle","sign","wonder","parable","beatitude","commandment","law","statute","ordinance","judgment","justice","wrath","vengeance","glory","glorify","majesty","sovereignty","almighty","creator","creation","providence","predestination","election","sanctification","sanctify","justification","justify","reconciliation","reconcile","propitiation","ransom","deliverance","deliver","savior","redeemer","mediator","intercessor","intercession","advocate","comforter","counselor","trinity","godhead","deity","divine","divinity","spirit","soul","flesh","conscience","wisdom","understanding","discernment","virtue","temptation","tempt","tempter","trial","tribulation","persecution","persecute","martyr","martyrdom","testimony","witness","confession","confess","doctrine","teaching","tradition","heresy","apostasy","backslide","idolatry","idol","idolater","graven image","false prophet","false teacher","antichrist","second coming","rapture","millennium","judgment day","heaven","paradise","hell","hades","sheol","gehenna","lake of fire","new heaven","new earth","new jerusalem","throne of god","book of life","seal","trumpet","plague","day of the lord","remnant","suffering servant","son of man","son of god","lamb of god","bread of life","living water","light of the world","good shepherd","vine","branches","salt of the earth","narrow gate","mustard seed","pearl of great price","prodigal son","good samaritan","lost sheep","lost coin","talents","sower","tares","wedding feast","vineyard","tenants"];
+var BIBLE_OBJECTS=["ark","ark of the covenant","incense","censer","lampstand","menorah","showbread","veil","holy of holies","laver","brazen sea","ephod","breastplate","urim","thummim","mitre","turban","girdle","phylactery","tassel","fringe","anointing oil","frankincense","myrrh","spices","leaven","grain offering","burnt offering","sin offering","guilt offering","peace offering","drink offering","wave offering","scapegoat","red heifer","sackcloth","shofar","cymbal","harp","lyre","timbrel","tambourine","psaltery","flute","pipe","lute"];
+var BIBLE_ANIMALS_PLANTS=["lion","lamb","goat","ram","ewe","ox","bull","calf","heifer","donkey","camel","dove","pigeon","sparrow","raven","eagle","owl","hawk","vulture","locust","grasshopper","serpent","viper","scorpion","wolf","bear","leopard","fox","jackal","hyena","deer","gazelle","hart","hind","coney","whale","dragon","behemoth","leviathan","unicorn","swine","mule","olive tree","fig tree","vine","grape","pomegranate","palm tree","cedar","cypress","oak","terebinth","myrtle","hyssop","thistle","thorn","bramble","lily","rose of sharon","mandrake","wheat","barley","flax","mustard seed","cummin","mint","dill","anise","rue","gourd","cucumber","leek","honey","manna","quail","balm of gilead","aloes","cinnamon","saffron","cassia","calamus"];
+var BIBLE_TITLES=["king","queen","prince","princess","governor","ruler","judge","chief","captain","centurion","tetrarch","procurator","proconsul","high priest","levite","prophetess","pharisee","sadducee","zealot","tax collector","publican","shepherd","fisherman","tentmaker","carpenter","physician","evangelist","deaconess","steward","servant","bondservant","master","master builder","wise man","magi","sorcerer","magician","soothsayer","diviner","astrologer","eunuch","chamberlain","cupbearer","butler","armorbearer","standard-bearer","watchman","gatekeeper","treasurer","lawyer","rabbi"];
+var BIBLE_FAMILY_MISC=["patriarch","matriarch","firstborn","birthright","inheritance","heir","concubine","betrothal","betroth","dowry","bridegroom","bride","widow","orphan","fatherless","sojourner","stranger","alien","kinsman","kinsman-redeemer","tribe","clan","lineage","genealogy","descendant","offspring","seed","generation","nomad","herdsman","husbandman","vinedresser","reaper","harvest","harvester","gleaner","threshing floor","winnowing","chaff","sheaf","famine","drought","pestilence","exile","captivity","diaspora","dispersion","restoration","rebuild","fortress","stronghold","citadel","throne","scepter","crown","sandal","staff","rod","sling","spear","shield","armor","breastplate of righteousness","helmet of salvation","sword of the spirit","shield of faith","belt of truth","gospel of peace"];
+var BIBLE_ARCHAIC=["thee","thou","thy","thine","ye","hath","hast","doth","dost","art","wilt","shalt","shouldst","wouldst","couldst","verily","behold","lo","hearken","whence","whither","hither","thither","hitherto","thence","wherefore","whereof","whereby","wherein","thereof","thereby","therein","thereupon","hereafter","henceforth","forasmuch","notwithstanding","peradventure","nay","yea","betwixt","amongst","whilst","unto","howbeit","sith","anon","straightway","exceeding","exceedingly","marvel","marvelous","wroth","abide","abode","sojourn","tarry","smite","smote","smitten","slay","slew","slain","rend","rent","girded","loins","bowels","countenance","visage","raiment","vesture","apparel","mantle","cloak","tunic","chariot","chariots","horsemen","host","hosts","multitude","oracle","oracles","statutes","ordinances","precepts","testimonies"];
+var BIBLE_VIRTUES_EMOTIONS=["humility","humble","arrogance","meekness","meek","gentleness","gentle","patience","longsuffering","forbearance","kindness","goodness","self-control","temperance","joy","joyful","peace","peaceful","compassion","merciful","gracious","wise","foolishness","folly","envy","jealousy","malice","hatred","bitterness","strife","discord","contention","dissension","sedition","adultery","fornication","uncleanness","lasciviousness","witchcraft","sorcery","variance","emulation","drunkenness","revelling","covetousness","greed","lust","gluttony","sloth","deceit","deceitful","hypocrisy","hypocrite","falsehood","integrity","purity","chastity","loyalty","devotion","reverence","awe","zeal","zealous","courage","boldness","cowardice","despair","hopelessness","comfort","consolation","sorrow","grief","mourning","lamentation","weeping","gladness","rejoicing","thanksgiving","gratitude","contentment"];
+var BIBLE_MEASURES=["cubit","span","handbreadth","homer","ephah","omer","seah","hin","log","bath","shekel","talent","mina","gerah","denarius","drachma","mite","farthing","furlong","watch","new moon","feast of trumpets","feast of tabernacles","feast of weeks","day of atonement","pentecost"];
+var BIBLE_WORDS = Array.from(new Set([].concat(BIBLE_NAMES,BIBLE_PLACES,BIBLE_BOOKS,BIBLE_THEOLOGY,BIBLE_OBJECTS,BIBLE_ANIMALS_PLANTS,BIBLE_TITLES,BIBLE_FAMILY_MISC,BIBLE_ARCHAIC,BIBLE_VIRTUES_EMOTIONS,BIBLE_MEASURES)));
+
+var ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+var DEFAULT_GRAMMAR = [
+  {id:"g1",title_en:"Parts of Speech",content_en:"English words fall into a few basic jobs: nouns name people/places/things (dog, city), verbs show action or state (run, is), adjectives describe nouns (happy, tall), adverbs describe verbs/adjectives (quickly, very), and pronouns replace nouns (he, they). Example: 'The happy dog runs quickly.'",content_my:""},
+  {id:"g2",title_en:"Basic Word Order",content_en:"A basic English sentence follows Subject + Verb + Object (SVO). Example: 'She (subject) reads (verb) books (object).' Unlike some languages, the order usually cannot be rearranged freely.",content_my:""},
+  {id:"g3",title_en:"The Verb 'To Be'",content_en:"'Be' changes form with the subject: I am, you/we/they are, he/she/it is. Example: 'I am a student. She is a teacher. They are friends.'",content_my:""},
+  {id:"g4",title_en:"Present Simple Tense",content_en:"Used for facts, habits, and routines. Add -s/-es for he/she/it. Example: 'I work every day. She works every day.'",content_my:""},
+  {id:"g5",title_en:"Past Simple Tense",content_en:"Used for finished actions. Regular verbs add -ed (walk → walked). Many common verbs are irregular (go → went, eat → ate). Example: 'Yesterday I walked to school. He went home.'",content_my:""},
+  {id:"g6",title_en:"Future Tense",content_en:"Use 'will' for decisions/predictions, and 'going to' for plans. Example: 'I will call you later.' / 'We are going to visit Bagan next month.'",content_my:""},
+  {id:"g7",title_en:"Plural Nouns",content_en:"Most nouns add -s (book → books). Words ending in -s, -x, -ch, -sh add -es (box → boxes). Some are irregular (child → children, man → men).",content_my:""},
+  {id:"g8",title_en:"Articles: a / an / the",content_en:"Use 'a' before consonant sounds and 'an' before vowel sounds for a non-specific noun (a dog, an apple). Use 'the' for a specific, already-known noun (the dog we saw yesterday).",content_my:""},
+  {id:"g9",title_en:"Asking Questions",content_en:"Yes/No questions usually flip the verb and subject: 'Are you ready?' Wh-questions start with what/where/when/why/who/how: 'Where do you live?'",content_my:""},
+  {id:"g10",title_en:"Negative Sentences",content_en:"Add 'not' after be-verbs (I am not) or use don't/doesn't/didn't with other verbs. Example: 'She is not here. I don't like coffee. He didn't call.'",content_my:""}
+];
+var DEFAULT_ABOUT = {
+  content_en:"Yanban is a constructed language project built by phonetically adapting English sounds. This dictionary and learning space is a living, collaborative project — words, lessons, and songs are added over time by the project team.",
+  content_my:"Yanban ဟာ English အသံများကို အခြေခံပြီး တီထွင်ထားတဲ့ ဘာသာစကားတစ်ခု ဖြစ်ပါတယ်။ ဒီ app ဟာ စာလုံးများ၊ သင်ခန်းစာများ၊ သီချင်းများကို အဖွဲ့သားများနဲ့ တစ်ဖြည်းဖြည်း တည်ဆောက်နေတဲ့ project တစ်ခု ဖြစ်ပါတယ်။"
+};
+
+var STR = {
+  dictionary:{en:"Dictionary",my:"အဘိဓာန်"}, alphabet:{en:"Yanban Alphabet",my:"Yanban အက္ခရာ"},
+  lessons:{en:"Yanban Literature",my:"Yanban စာပေ"}, grammar:{en:"English Grammar",my:"အင်္ဂလိပ် သဒ္ဒါ"},
+  songs:{en:"Songs",my:"သီချင်းများ"}, about:{en:"About",my:"အကြောင်း"}, team:{en:"Team & Review",my:"အဖွဲ့ & စီစစ်ခြင်း"},
+  menu:{en:"Menu",my:"မီနူး"}, entries:{en:"entries",my:"လုံး"}, addWord:{en:"Add word",my:"စာလုံးအသစ်"},
+  save:{en:"Save",my:"သိမ်းမည်"}, cancel:{en:"Cancel",my:"ပယ်ဖျက်"}, submitForReview:{en:"Submit for review",my:"တင်ပြမည်"}
+};
+function t(key){ return (STR[key] ? STR[key][S.lang] : key); }
+
+/* ================= state ================= */
+var S = {
+  view:"dictionary", menuOpen:false, lang:"my", identity:null, showOnboard:false,
+  entries:[], config:{ownerPin:null,developers:[],joinRequests:[]},
+  lessons:[], grammar:DEFAULT_GRAMMAR, songs:[], about:DEFAULT_ABOUT, alphaAudio:{},
+  ui:{
+    dict:{query:"",direction:"en",onlyUntranslated:false,formOpen:false,editingId:null,form:{en:"",yanban:"",meaning:"",example:""},confirmDelete:null,visibleCount:150},
+    onboard:{step:"choose",name:"",pin:"",error:"",pendingNotice:false,submitting:false},
+    lessons:{openId:null,editingId:null,form:{title:"",body:""}},
+    grammarv:{editingId:null,form:{title_en:"",content_en:"",content_my:""}},
+    songs:{openId:null,editingId:null,form:{title:"",lyrics:"",note:""}},
+    about:{editing:false,form:null},
+    team:{newDev:""},
+    alphabet:{uploadingLetter:null}
+  }
+};
+
+function init(){
+  S.identity = sget(IDENTITY_KEY,false,null);
+  S.showOnboard = !S.identity;
+  S.lang = sget(LANG_KEY,false,"my");
+  S.config = sget(CONFIG_KEY,true,{ownerPin:null,developers:[],joinRequests:[]});
+  var ents = sget(ENTRIES_KEY,true,null);
+  if (!ents || ents.length===0) {
+    ents = SEED_WORDS.map(function(w){ return {id:uid(),en:w,yanban:"",meaning:"",example:"",createdAt:Date.now()}; });
+    sset(ENTRIES_KEY,true,ents);
+  }
+  S.entries = ents;
+  S.lessons = sget(LESSONS_KEY,true,[]);
+  var gram = sget(GRAMMAR_KEY,true,null);
+  if (!gram) { gram = DEFAULT_GRAMMAR; sset(GRAMMAR_KEY,true,gram); }
+  S.grammar = gram;
+  S.songs = sget(SONGS_KEY,true,[]);
+  var abt = sget(ABOUT_KEY,true,null);
+  if (!abt) { abt = DEFAULT_ABOUT; sset(ABOUT_KEY,true,abt); }
+  S.about = abt;
+  S.alphaAudio = sget(ALPHABET_AUDIO_KEY,true,{});
+
+  var seeded = sget(BIBLE_SEED_FLAG_KEY,true,false);
+  if (!seeded) {
+    var existing = {};
+    S.entries.forEach(function(e){ existing[e.en.trim().toLowerCase()] = true; });
+    var additions = [];
+    BIBLE_WORDS.forEach(function(w){
+      var key = w.trim().toLowerCase();
+      if (!existing[key]) { existing[key]=true; additions.push({id:uid(),en:w,yanban:"",meaning:"",example:"",createdAt:Date.now()}); }
+    });
+    if (additions.length>0) { S.entries = S.entries.concat(additions); sset(ENTRIES_KEY,true,S.entries); }
+    sset(BIBLE_SEED_FLAG_KEY,true,true);
+  }
+  render();
+}
+
+function persistEntries(next){ S.entries=next; sset(ENTRIES_KEY,true,next); render(); }
+function persistConfig(next){ S.config=next; sset(CONFIG_KEY,true,next); render(); }
+function persistLessons(next){ S.lessons=next; sset(LESSONS_KEY,true,next); render(); }
+function persistGrammar(next){ S.grammar=next; sset(GRAMMAR_KEY,true,next); render(); }
+function persistSongs(next){ S.songs=next; sset(SONGS_KEY,true,next); render(); }
+function persistAbout(next){ S.about=next; sset(ABOUT_KEY,true,next); render(); }
+function persistAlphaAudio(next){ S.alphaAudio=next; sset(ALPHABET_AUDIO_KEY,true,next); render(); }
+function persistIdentity(next){ S.identity=next; sset(IDENTITY_KEY,false,next); render(); }
+function persistLang(next){ S.lang=next; sset(LANG_KEY,false,next); render(); }
+
+/* ================= render root ================= */
+var root = document.getElementById("root");
+function render(){
+  var prevActive = document.activeElement;
+  var prevId = prevActive && prevActive.id;
+  var prevSelStart, prevSelEnd;
+  try { prevSelStart = prevActive.selectionStart; prevSelEnd = prevActive.selectionEnd; } catch(e){}
+  var scrollY = window.scrollY;
+  root.innerHTML = "";
+  root.appendChild(buildApp());
+  if (prevId) {
+    var el = document.getElementById(prevId);
+    if (el) {
+      el.focus();
+      if (typeof prevSelStart === 'number' && el.setSelectionRange) {
+        try { el.setSelectionRange(prevSelStart, prevSelEnd); } catch(e){}
+      }
+    }
+  }
+  window.scrollTo(0, scrollY);
+}
+
+function role(){ return (S.identity && S.identity.role) || "guest"; }
+function isOwner(){ return role()==="owner"; }
+function isDeveloper(){ return role()==="developer"; }
+
+function buildApp(){
+  var frag = h('div', {style:{minHeight:'100vh',display:'flex',flexDirection:'column'}});
+  if (S.showOnboard) frag.appendChild(buildOnboardModal());
+  frag.appendChild(buildTopBar());
+  if (S.menuOpen) frag.appendChild(buildMenuPanel());
+  var main = h('main', {style:{flex:'1'}});
+  if (S.view==="dictionary") main.appendChild(buildDictionaryView());
+  else if (S.view==="alphabet") main.appendChild(buildAlphabetView());
+  else if (S.view==="lessons") main.appendChild(buildLessonsView());
+  else if (S.view==="grammar") main.appendChild(buildGrammarView());
+  else if (S.view==="songs") main.appendChild(buildSongsView());
+  else if (S.view==="about") main.appendChild(buildAboutView());
+  else if (S.view==="team" && isOwner()) main.appendChild(buildTeamView());
+  frag.appendChild(main);
+  frag.appendChild(h('footer', null,
+    h('span', null, 'Yanban Project'),
+    h('span', null, S.identity ? (S.identity.name + ' · ' + role()) : 'guest')
+  ));
+  return frag;
+}
+
+/* ---------- top bar ---------- */
+function buildTopBar(){
+  var pendingCount = S.entries.filter(function(e){ return e.pending; }).length;
+  var joinReqCount = (S.config.joinRequests||[]).length;
+  return h('header', {class:'topbar'},
+    h('div', {class:'topbar-inner'},
+      h('div', {class:'brand'},
+        h('div', {class:'brand-icon'}, icon('book',18)),
+        h('div', null,
+          h('h1', null, 'Yanban-English Dictionary'),
+          h('p', null, S.entries.length + ' ' + t('entries'))
+        )
+      ),
+      h('button', {class:'menu-btn', onclick:function(){ S.menuOpen=true; render(); }}, icon('menu',18))
+    )
+  );
+}
+
+/* ---------- menu panel ---------- */
+function buildMenuPanel(){
+  var NAV = [
+    {key:"dictionary",label:t("dictionary"),i:"book"},
+    {key:"alphabet",label:t("alphabet"),i:"cap"},
+    {key:"lessons",label:t("lessons"),i:"book"},
+    {key:"grammar",label:t("grammar"),i:"cap"},
+    {key:"songs",label:t("songs"),i:"music"},
+    {key:"about",label:t("about"),i:"info"}
+  ];
+  var pendingCount = S.entries.filter(function(e){ return e.pending; }).length;
+  var joinReqCount = (S.config.joinRequests||[]).length;
+  if (isOwner()) NAV.push({key:"team",label:t("team"),i:"shield",badge:pendingCount+joinReqCount});
+
+  var nav = h('nav', {class:'menu-nav'});
+  NAV.forEach(function(n){
+    var active = S.view===n.key;
+    var btn = h('button', {class:'menu-item'+(active?' active':''), onclick:function(){ S.view=n.key; S.menuOpen=false; render(); }},
+      h('span', {class:'lbl'}, icon(n.i,16), n.label)
+    );
+    if (n.badge) btn.appendChild(h('span', {class:'menu-badge'}, String(n.badge)));
+    nav.appendChild(btn);
+  });
+
+  return h('div', {class:'menu-overlay'},
+    h('div', {class:'menu-scrim', onclick:function(){ S.menuOpen=false; render(); }}),
+    h('div', {class:'menu-panel'},
+      h('div', {class:'menu-head'},
+        h('span', {class:'menu-title'}, t('menu')),
+        h('button', {class:'close-btn', onclick:function(){ S.menuOpen=false; render(); }}, icon('x',18))
+      ),
+      nav,
+      h('div', {class:'menu-foot'},
+        h('button', {class:'menu-foot-btn', onclick:function(){ persistLang(S.lang==='en'?'my':'en'); }},
+          icon('globe',16), (S.lang==='en'?'English':'မြန်မာ')
+        ),
+        h('button', {class:'menu-foot-btn', onclick:function(){ S.menuOpen=false; S.showOnboard=true; render(); }},
+          icon('login',16), (S.identity ? (S.identity.name+' ('+role()+')') : 'Sign in')
+        )
+      )
+    )
+  );
+}
+
+/* ---------- modal helper ---------- */
+function Modal(opts, children){
+  var box = h('div', {class:'modal-box'+(opts.wide?' wide':'')});
+  children.forEach(function(c){ if (c) box.appendChild(c); });
+  var overlay = h('div', {class:'modal-overlay', onclick:function(e){ if (e.target===overlay && opts.onClose) opts.onClose(); }});
+  overlay.appendChild(box);
+  return overlay;
+}
+function Field(label, inputEl){
+  return h('div', {class:'field'}, h('label', null, label), inputEl);
+}
+
+/* ---------- onboarding ---------- */
+function buildOnboardModal(){
+  var ui = S.ui.onboard;
+  function goGuest(){
+    persistIdentity({name: ui.name.trim() || "Guest", role:"guest"});
+    S.showOnboard=false; ui.step="choose"; ui.name=""; ui.pin=""; ui.error=""; ui.pendingNotice=false;
+    render();
+  }
+  function submitOwner(){
+    ui.error="";
+    if (!ui.name.trim()) { ui.error="နာမည် ထည့်ပါ"; render(); return; }
+    if (!S.config.ownerPin) {
+      if (ui.pin.trim().length<4) { ui.error="PIN အနည်းဆုံး ၄ လုံး ထည့်ပါ"; render(); return; }
+      S.config = Object.assign({}, S.config, {ownerPin: ui.pin.trim()});
+      sset(CONFIG_KEY,true,S.config);
+      persistIdentity({name:ui.name.trim(), role:"owner"});
+    } else {
+      if (ui.pin.trim() !== S.config.ownerPin) { ui.error="PIN မှားနေပါသည်"; render(); return; }
+      persistIdentity({name:ui.name.trim(), role:"owner"});
+    }
+    S.showOnboard=false; ui.step="choose"; ui.name=""; ui.pin=""; ui.error="";
+    render();
+  }
+  function submitDeveloper(){
+    ui.error="";
+    if (!ui.name.trim()) { ui.error="နာမည် ထည့်ပါ"; render(); return; }
+    var match = (S.config.developers||[]).some(function(d){ return d.name.toLowerCase()===ui.name.trim().toLowerCase(); });
+    if (match) {
+      persistIdentity({name:ui.name.trim(), role:"developer"});
+      S.showOnboard=false; ui.step="choose"; ui.name=""; render();
+    } else {
+      ui.pendingNotice=true; render();
+    }
+  }
+  function continueAsGuestAfterRequest(){
+    var already = (S.config.joinRequests||[]).some(function(r){ return r.name.toLowerCase()===ui.name.trim().toLowerCase(); });
+    var joinRequests = already ? S.config.joinRequests : (S.config.joinRequests||[]).concat([{name:ui.name.trim(), requestedAt:Date.now()}]);
+    S.config = Object.assign({}, S.config, {joinRequests:joinRequests});
+    sset(CONFIG_KEY,true,S.config);
+    persistIdentity({name:ui.name.trim(), role:"guest"});
+    S.showOnboard=false; ui.step="choose"; ui.name=""; ui.pendingNotice=false;
+    render();
+  }
+
+  var body = [];
+  body.push(h('h2', {class:'serif', style:{fontSize:'18px',fontWeight:'600',color:'#F5EFDF',margin:'0 0 4px'}}, 'Yanban မှ ကြိုဆိုပါတယ်'));
+  body.push(h('p', {class:'muted', style:{fontSize:'12px',margin:'0 0 20px'}}, 'သင့်ရဲ့ role ကို ရွေးချယ်ပါ'));
+
+  if (ui.step==="choose") {
+    body.push(h('div', {class:'space-y'},
+      h('button', {class:'btn btn-ghost', style:{width:'100%',justifyContent:'flex-start'}, onclick:function(){ ui.step="owner-pin"; render(); }}, icon('shield',15), 'Owner (project owner)'),
+      h('button', {class:'btn btn-ghost', style:{width:'100%',justifyContent:'flex-start'}, onclick:function(){ ui.step="dev-name"; ui.pendingNotice=false; ui.error=""; render(); }}, icon('users',15), 'Developer (translation team)'),
+      h('button', {class:'btn btn-ghost', style:{width:'100%',justifyContent:'flex-start'}, onclick:goGuest}, icon('book',15), 'Guest (view only)')
+    ));
+  } else if (ui.step==="owner-pin") {
+    var nameInput = h('input', {class:'input', id:'ob-name', value:ui.name, oninput:function(e){ ui.name=e.target.value; }});
+    var pinInput = h('input', {class:'input', type:'password', id:'ob-pin', value:ui.pin, oninput:function(e){ ui.pin=e.target.value; }});
+    body.push(h('div', {class:'space-y'},
+      Field('Name', nameInput),
+      Field(S.config.ownerPin?'Owner PIN':'Set a new Owner PIN (min 4 digits)', pinInput),
+      ui.error ? h('p', {style:{fontSize:'12px',color:'var(--red)',margin:0}}, ui.error) : null,
+      h('div', {class:'flex-row gap-2', style:{paddingTop:'4px'}},
+        h('button', {class:'btn btn-gold', style:{flex:'1'}, onclick:submitOwner}, 'Continue'),
+        h('button', {class:'btn btn-ghost', onclick:function(){ ui.step="choose"; render(); }}, 'Back')
+      )
+    ));
+  } else if (ui.step==="dev-name" && !ui.pendingNotice) {
+    var devNameInput = h('input', {class:'input', id:'ob-devname', value:ui.name, oninput:function(e){ ui.name=e.target.value; }});
+    body.push(h('div', {class:'space-y'},
+      Field('Name (owner ထံမှာ မှတ်ပုံတင်ထားတဲ့ အတိုင်း)', devNameInput),
+      ui.error ? h('p', {style:{fontSize:'12px',color:'var(--red)',margin:0}}, ui.error) : null,
+      h('div', {class:'flex-row gap-2', style:{paddingTop:'4px'}},
+        h('button', {class:'btn btn-gold', style:{flex:'1'}, onclick:submitDeveloper}, 'Continue'),
+        h('button', {class:'btn btn-ghost', onclick:function(){ ui.step="choose"; render(); }}, 'Back')
+      )
+    ));
+  } else if (ui.step==="dev-name" && ui.pendingNotice) {
+    body.push(h('div', {class:'space-y'},
+      h('div', {class:'err-box'},
+        h('p', {style:{fontSize:'14px',color:'var(--gold-light)',margin:0}}, '"'+ui.name.trim()+'" နာမည်ဟာ Owner ရဲ့ developer list ထဲမှာ မတွေ့ပါ။'),
+        h('p', {style:{fontSize:'12px',color:'var(--text-dim)',margin:'6px 0 0'}}, 'Owner ဆီ join request ပို့ပေးလိုက်ပါပြီ — Owner က Team & Review ထဲကနေ Approve လုပ်ပေးမှ Developer အဖြစ် ဝင်ရောက် ပြင်ဆင်နိုင်ပါမယ်။ ယခုအတွက် Guest အနေနဲ့ ကြည့်ရှုနိုင်ပါတယ်။')
+      ),
+      h('div', {class:'flex-row gap-2', style:{paddingTop:'4px'}},
+        h('button', {class:'btn btn-gold', style:{flex:'1'}, onclick:continueAsGuestAfterRequest}, 'Guest အနေနဲ့ ဆက်သွားမည်'),
+        h('button', {class:'btn btn-ghost', onclick:function(){ ui.step="choose"; ui.pendingNotice=false; render(); }}, 'Back')
+      )
+    ));
+  }
+
+  return Modal({onClose:function(){}}, body);
+}
+
+/* ---------- Dictionary View ---------- */
+function buildDictionaryView(){
+  var ui = S.ui.dict;
+  var owner = isOwner(), dev = isDeveloper();
+  var canAdd = owner, canEdit = owner || dev;
+
+  var untranslatedCount = S.entries.filter(function(it){ return !it.yanban.trim(); }).length;
+
+  var q = ui.query.trim().toLowerCase();
+  var list = S.entries;
+  if (ui.onlyUntranslated) list = list.filter(function(it){ return !it.yanban.trim(); });
+  if (q) {
+    list = list.filter(function(it){
+      var target = ui.direction==='en' ? it.en : it.yanban;
+      var other = ui.direction==='en' ? it.yanban : it.en;
+      return target.toLowerCase().indexOf(q)>=0 || other.toLowerCase().indexOf(q)>=0 || (it.meaning||"").toLowerCase().indexOf(q)>=0;
+    });
+  }
+  list = list.slice().sort(function(a,b){
+    var av = ui.direction==='en'?a.en:a.yanban, bv = ui.direction==='en'?b.en:b.yanban;
+    return av.localeCompare(bv);
+  });
+
+  var visible = list.slice(0, ui.visibleCount);
+  var grouped = {};
+  var order = [];
+  visible.forEach(function(it){
+    var key = letterOf(ui.direction==='en'?it.en:it.yanban);
+    if (!grouped[key]) { grouped[key]=[]; order.push(key); }
+    grouped[key].push(it);
+  });
+  order.sort(function(a,b){ return a.localeCompare(b); });
+
+  function openAdd(){ ui.editingId=null; ui.form={en:"",yanban:"",meaning:"",example:""}; ui.formOpen=true; render(); }
+  function openEdit(entry){
+    ui.editingId = entry.id;
+    if (owner) ui.form = {en:entry.en, yanban:entry.yanban, meaning:entry.meaning||"", example:entry.example||""};
+    else {
+      var p = entry.pending;
+      ui.form = {en:entry.en, yanban:p?p.yanban:entry.yanban, meaning:p?p.meaning:(entry.meaning||""), example:p?p.example:(entry.example||"")};
+    }
+    ui.formOpen=true; render();
+  }
+  function closeForm(){ ui.formOpen=false; ui.editingId=null; render(); }
+  function submitForm(e){
+    e.preventDefault();
+    if (!ui.form.en.trim()) return;
+    if (ui.editingId) {
+      if (owner) {
+        persistEntries(S.entries.map(function(it){
+          return it.id===ui.editingId ? Object.assign({},it,{en:ui.form.en.trim(),yanban:ui.form.yanban.trim(),meaning:ui.form.meaning.trim(),example:ui.form.example.trim()}) : it;
+        }));
+      } else {
+        persistEntries(S.entries.map(function(it){
+          return it.id===ui.editingId ? Object.assign({},it,{pending:{yanban:ui.form.yanban.trim(),meaning:ui.form.meaning.trim(),example:ui.form.example.trim(),submittedBy:(S.identity&&S.identity.name)||"unknown",submittedAt:Date.now()}}) : it;
+        }));
+      }
+    } else if (canAdd) {
+      persistEntries(S.entries.concat([{id:uid(),en:ui.form.en.trim(),yanban:ui.form.yanban.trim(),meaning:ui.form.meaning.trim(),example:ui.form.example.trim(),createdAt:Date.now()}]));
+    }
+    closeForm();
+  }
+  function doDelete(id){ persistEntries(S.entries.filter(function(it){ return it.id!==id; })); ui.confirmDelete=null; render(); }
+
+  var container = h('div', null);
+
+  var searchInput = h('input', {class:'input', id:'dict-search', value:ui.query,
+    placeholder: ui.direction==='en' ? 'English စာလုံးရှာရန်...' : 'Yanban စာလုံးရှာရန်...',
+    oninput:function(e){ ui.query=e.target.value; ui.visibleCount=150; render(); }
+  });
+  var toolbar = h('div', {class:'dict-toolbar'},
+    h('div', {class:'dict-toolbar-row'},
+      h('div', {class:'search-wrap'}, icon('search',16), searchInput),
+      h('button', {class:'swap-btn', onclick:function(){ ui.direction = ui.direction==='en'?'yb':'en'; ui.visibleCount=150; render(); }},
+        icon('swap',14), (ui.direction==='en' ? 'English → Yanban' : 'Yanban → English')
+      ),
+      canAdd ? h('button', {class:'btn btn-gold', onclick:openAdd}, icon('plus',16), t('addWord')) : null
+    )
+  );
+  if (untranslatedCount>0) {
+    var cb = h('input', {type:'checkbox', checked:ui.onlyUntranslated, onchange:function(e){ ui.onlyUntranslated=e.target.checked; ui.visibleCount=150; render(); }});
+    toolbar.appendChild(h('div', {class:'untrans-row'},
+      h('label', null, cb, 'ဘာသာမပြန်ရသေးသော စာလုံးများသာ ('+untranslatedCount+')')
+    ));
+  }
+  container.appendChild(toolbar);
+
+  var body = h('div', {class:'px', style:{paddingTop:'32px',paddingBottom:'32px'}});
+  var wrap = h('div', {class:'wrap'});
+  if (list.length===0) {
+    wrap.appendChild(h('p', {class:'center-pad'}, '"'+ui.query+'" နှင့် ကိုက်ညီသော စာလုံး မတွေ့ပါ'));
+  } else {
+    var sections = h('div', {class:'space-y-lg'});
+    order.forEach(function(letter){
+      var items = grouped[letter];
+      var sec = h('section', null,
+        h('div', {class:'letter-head'}, letter),
+        h('div', {class:'space-y'})
+      );
+      var itemsWrap = sec.querySelector('.space-y');
+      items.forEach(function(it){
+        var showPending = it.pending && (role()==='owner' || (S.identity && it.pending.submittedBy===S.identity.name));
+        var displayYanban = ui.direction==='en' ? it.yanban : it.en;
+        var mainDiv = h('div', {class:'entry-main'},
+          h('div', {class:'entry-head'},
+            h('span', {class:'entry-en'}, ui.direction==='en'?it.en:it.yanban),
+            h('span', {class:'entry-arrow'}, '→'),
+            displayYanban ? h('span', {class:'entry-yb'}, displayYanban) : h('span', {class:'entry-empty'}, 'ဘာသာမပြန်ရသေးပါ'),
+            showPending ? h('span', {class:'pending-badge'}, icon('clock',10), 'pending: '+it.pending.yanban) : null
+          ),
+          it.meaning ? h('p', {class:'entry-meaning'}, it.meaning) : null,
+          it.example ? h('p', {class:'entry-example'}, '"'+it.example+'"') : null
+        );
+        var actions = h('div', {class:'flex-row gap-1', style:{flexShrink:'0'}});
+        if (canEdit) actions.appendChild(h('button', {class:'icon-btn gold', onclick:function(){ openEdit(it); }}, icon('pencil',14)));
+        if (owner) actions.appendChild(h('button', {class:'icon-btn red', onclick:function(){ ui.confirmDelete=it.id; render(); }}, icon('trash',14)));
+        itemsWrap.appendChild(h('div', {class:'card entry-row'}, mainDiv, actions));
+      });
+      sections.appendChild(sec);
+    });
+    wrap.appendChild(sections);
+    if (ui.visibleCount < list.length) {
+      wrap.appendChild(h('button', {class:'btn btn-ghost', style:{width:'100%',marginTop:'24px'}, onclick:function(){ ui.visibleCount+=150; render(); }},
+        visible.length+' / '+list.length+' ပြထားသည် — နောက်ထပ် ပြရန်'
+      ));
+    }
+  }
+  body.appendChild(wrap);
+  container.appendChild(body);
+
+  if (ui.formOpen) {
+    var enInput = h('input', {class:'input', id:'dict-en', value:ui.form.en, disabled: !!ui.editingId && !owner, required:true, oninput:function(e){ ui.form.en=e.target.value; }});
+    var ybInput = h('input', {class:'input', id:'dict-yb', value:ui.form.yanban, placeholder:'Yanban ဘာသာ', oninput:function(e){ ui.form.yanban=e.target.value; }});
+    var meanInput = h('input', {class:'input', id:'dict-mean', value:ui.form.meaning, oninput:function(e){ ui.form.meaning=e.target.value; }});
+    var exInput = h('input', {class:'input', id:'dict-ex', value:ui.form.example, oninput:function(e){ ui.form.example=e.target.value; }});
+    var formEl = h('form', {class:'space-y', onsubmit:submitForm},
+      Field('English word', enInput),
+      Field('Yanban word', ybInput),
+      Field('အဓိပ္ပာယ် (ဗမာလို) — optional', meanInput),
+      Field('ဥပမာဝါကျ — optional', exInput),
+      h('div', {class:'flex-row gap-2', style:{paddingTop:'8px'}},
+        h('button', {type:'submit', class:'btn btn-gold', style:{flex:'1'}}, (ui.editingId && !owner) ? t('submitForReview') : t('save')),
+        h('button', {type:'button', class:'btn btn-ghost', onclick:closeForm}, t('cancel'))
+      )
+    );
+    container.appendChild(Modal({onClose:closeForm},[
+      h('div', {class:'flex-between', style:{marginBottom:'20px'}},
+        h('h2', {class:'serif', style:{fontSize:'18px',fontWeight:'600',color:'#F5EFDF',margin:0}}, ui.editingId ? 'စာလုံးပြင်ရန်' : 'စာလုံးအသစ်ထည့်ရန်'),
+        h('button', {class:'close-btn', onclick:closeForm}, icon('x',18))
+      ),
+      formEl
+    ]));
+  }
+  if (ui.confirmDelete) {
+    container.appendChild(Modal({onClose:function(){ ui.confirmDelete=null; render(); }},[
+      h('p', {style:{fontSize:'14px',color:'var(--text)',margin:'0 0 20px'}}, 'ဒီစာလုံးကို ဖျက်မှာ သေချာပါသလား?'),
+      h('div', {class:'flex-row gap-2'},
+        h('button', {class:'btn btn-red', style:{flex:'1'}, onclick:function(){ doDelete(ui.confirmDelete); }}, 'ဖျက်မည်'),
+        h('button', {class:'btn btn-ghost', onclick:function(){ ui.confirmDelete=null; render(); }}, 'မဖျက်တော့ပါ')
+      )
+    ]));
+  }
+
+  return container;
+}
+
+/* ---------- Alphabet View ---------- */
+function buildAlphabetView(){
+  var canEdit = isOwner() || isDeveloper();
+  var ui = S.ui.alphabet;
+
+  function play(letter){
+    var src = S.alphaAudio[letter];
+    if (!src) return;
+    var a = new Audio(src);
+    a.play().catch(function(){});
+  }
+  function handleFile(letter, file){
+    if (!file) return;
+    if (file.size > 400*1024) { alert('Audio file ကို 400KB အောက် သုံးပါ (short clip)'); return; }
+    ui.uploadingLetter = letter; render();
+    var reader = new FileReader();
+    reader.onload = function(){
+      var next = Object.assign({}, S.alphaAudio); next[letter]=reader.result;
+      ui.uploadingLetter=null;
+      persistAlphaAudio(next);
+    };
+    reader.onerror = function(){ ui.uploadingLetter=null; render(); };
+    reader.readAsDataURL(file);
+  }
+
+  var grid = h('div', {class:'alpha-grid'});
+  ALPHABET.forEach(function(letter){
+    var hasAudio = !!S.alphaAudio[letter];
+    var tile = h('div', {class:'alpha-tile'},
+      h('button', {onclick:function(){ play(letter); }},
+        h('span', {class:'alpha-letter'}, letter+letter.toLowerCase()),
+        hasAudio ? h('div', {class:'alpha-audio-icon'}, icon('volume',13)) : h('span', {class:'alpha-noaudio'}, 'no audio')
+      )
+    );
+    if (canEdit) {
+      var fileInput = h('input', {type:'file', accept:'audio/*', style:{display:'none'}, onchange:function(e){ handleFile(letter, e.target.files[0]); }});
+      var lab = h('label', {class:'alpha-upload'}, ui.uploadingLetter===letter ? icon('loader',11,{}) : icon('upload',11), fileInput);
+      if (ui.uploadingLetter===letter) lab.firstChild.classList.add('spin');
+      tile.appendChild(lab);
+    }
+    grid.appendChild(tile);
+  });
+
+  return h('div', {class:'px', style:{paddingTop:'32px',paddingBottom:'32px'}},
+    h('div', {class:'wrap'},
+      h('h2', {class:'section-title mb-1'}, t('alphabet')),
+      h('p', {class:'muted', style:{fontSize:'14px',marginBottom:'24px'}}, 'စာလုံးကို နှိပ်ပြီး အသံနားထောင်ပါ'+(canEdit?' · upload icon ကနေ အသံ ထည့်နိုင်ပါတယ်':'')),
+      grid
+    )
+  );
+}
+
+/* ---------- Lessons View ---------- */
+function buildLessonsView(){
+  var canEdit = isOwner();
+  var ui = S.ui.lessons;
+
+  function openNew(){ ui.editingId="new"; ui.form={title:"",body:""}; render(); }
+  function openEdit(l){ ui.editingId=l.id; ui.form={title:l.title, body:l.body}; render(); }
+  function save(){
+    if (!ui.form.title.trim()) return;
+    if (ui.editingId==="new") persistLessons(S.lessons.concat([{id:uid("l"), title:ui.form.title.trim(), body:ui.form.body, createdAt:Date.now()}]));
+    else persistLessons(S.lessons.map(function(l){ return l.id===ui.editingId ? Object.assign({},l,{title:ui.form.title.trim(),body:ui.form.body}) : l; }));
+    ui.editingId=null; render();
+  }
+  function remove(id){ persistLessons(S.lessons.filter(function(l){ return l.id!==id; })); }
+
+  var wrap = h('div', {class:'wrap'},
+    h('div', {class:'flex-between mb-3'},
+      h('h2', {class:'section-title'}, t('lessons')),
+      canEdit ? h('button', {class:'btn btn-gold', onclick:openNew}, icon('plus',15), 'Add Lesson') : null
+    )
+  );
+  var list = h('div', {class:'space-y'});
+  list.appendChild(h('button', {class:'card', style:{width:'100%',textAlign:'left',display:'flex',alignItems:'center',justifyContent:'space-between',background:'var(--panel)',border:'1px solid var(--border)',cursor:'pointer'}, onclick:function(){ S.view="alphabet"; render(); }},
+    h('div', null,
+      h('span', {class:'mono', style:{fontSize:'10px',color:'var(--gold)',textTransform:'uppercase'}}, 'Lesson 1'),
+      h('p', {class:'serif', style:{fontSize:'16px',color:'#F5EFDF',margin:0}}, 'Yanban Alphabet')
+    ),
+    icon('chevron',16,{color:'var(--text-faint)'})
+  ));
+
+  S.lessons.forEach(function(l, idx){
+    var openId = ui.openId;
+    var headRow = h('div', {class:'flex-between'},
+      h('button', {style:{textAlign:'left',flex:'1',background:'none',border:'none',color:'inherit',padding:0}, onclick:function(){ ui.openId = (openId===l.id?null:l.id); render(); }},
+        h('span', {class:'mono', style:{fontSize:'10px',color:'var(--gold)',textTransform:'uppercase'}}, 'Lesson '+(idx+2)),
+        h('p', {class:'serif', style:{fontSize:'16px',color:'#F5EFDF',margin:0}}, l.title)
+      )
+    );
+    if (canEdit) headRow.appendChild(h('div', {class:'flex-row gap-1', style:{flexShrink:'0'}},
+      h('button', {class:'icon-btn gold', onclick:function(){ openEdit(l); }}, icon('pencil',14)),
+      h('button', {class:'icon-btn red', onclick:function(){ remove(l.id); }}, icon('trash',14))
+    ));
+    var card = h('div', {class:'card'}, headRow);
+    if (ui.openId===l.id && l.body) card.appendChild(h('p', {style:{fontSize:'14px',color:'var(--text-dim)',marginTop:'10px',whiteSpace:'pre-wrap'}}, l.body));
+    list.appendChild(card);
+  });
+  if (S.lessons.length===0) list.appendChild(h('p', {class:'muted', style:{fontSize:'14px',padding:'20px 0'}}, 'Lesson 2 နှင့် ဆက်လက် ရေးသားနိုင်ပါပြီ'));
+  wrap.appendChild(list);
+
+  var container = h('div', {class:'px', style:{paddingTop:'32px',paddingBottom:'32px'}}, wrap);
+
+  if (ui.editingId) {
+    var titleInput = h('input', {class:'input', id:'les-title', value:ui.form.title, oninput:function(e){ ui.form.title=e.target.value; }});
+    var bodyInput = h('textarea', {class:'textarea', id:'les-body', rows:10, oninput:function(e){ ui.form.body=e.target.value; }}, ui.form.body);
+    container.appendChild(Modal({onClose:function(){ ui.editingId=null; render(); }, wide:true},[
+      h('h2', {class:'serif', style:{fontSize:'18px',color:'#F5EFDF',margin:'0 0 16px'}}, ui.editingId==="new"?"Add Lesson":"Edit Lesson"),
+      h('div', {class:'space-y'},
+        Field('Title', titleInput),
+        Field('Content', bodyInput),
+        h('div', {class:'flex-row gap-2', style:{paddingTop:'4px'}},
+          h('button', {class:'btn btn-gold', style:{flex:'1'}, onclick:save}, t('save')),
+          h('button', {class:'btn btn-ghost', onclick:function(){ ui.editingId=null; render(); }}, t('cancel'))
+        )
+      )
+    ]));
+  }
+  return container;
+}
+
+/* ---------- Grammar View ---------- */
+function buildGrammarView(){
+  var canEdit = isOwner();
+  var ui = S.ui.grammarv;
+
+  function openNew(){ ui.editingId="new"; ui.form={title_en:"",content_en:"",content_my:""}; render(); }
+  function openEdit(g){ ui.editingId=g.id; ui.form={title_en:g.title_en,content_en:g.content_en,content_my:g.content_my||""}; render(); }
+  function save(){
+    if (!ui.form.title_en.trim()) return;
+    if (ui.editingId==="new") persistGrammar(S.grammar.concat([Object.assign({id:uid("g")},ui.form)]));
+    else persistGrammar(S.grammar.map(function(g){ return g.id===ui.editingId ? Object.assign({},g,ui.form) : g; }));
+    ui.editingId=null; render();
+  }
+  function remove(id){ persistGrammar(S.grammar.filter(function(g){ return g.id!==id; })); }
+
+  var wrap = h('div', {class:'wrap'},
+    h('div', {class:'flex-between mb-3'},
+      h('h2', {class:'section-title'}, t('grammar')),
+      canEdit ? h('button', {class:'btn btn-gold', onclick:openNew}, icon('plus',15), 'Add') : null
+    )
+  );
+  var list = h('div', {class:'space-y'});
+  S.grammar.forEach(function(g){
+    var head = h('div', {style:{display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:'8px'}},
+      h('p', {class:'serif', style:{fontSize:'16px',color:'#F5EFDF',margin:0}}, g.title_en)
+    );
+    if (canEdit) head.appendChild(h('div', {class:'flex-row gap-1', style:{flexShrink:'0'}},
+      h('button', {class:'icon-btn gold', onclick:function(){ openEdit(g); }}, icon('pencil',14)),
+      h('button', {class:'icon-btn red', onclick:function(){ remove(g.id); }}, icon('trash',14))
+    ));
+    var card = h('div', {class:'card'}, head,
+      h('p', {style:{fontSize:'14px',color:'var(--text-dim)',marginTop:'8px'}}, g.content_en)
+    );
+    if (g.content_my) card.appendChild(h('p', {style:{fontSize:'14px',color:'var(--gold-light)',marginTop:'8px',borderTop:'1px solid var(--border)',paddingTop:'8px'}}, g.content_my));
+    else card.appendChild(h('p', {class:'mono', style:{fontSize:'10px',color:'#5c6472',marginTop:'8px',fontStyle:'italic'}}, 'Yanban ဘာသာပြန် မထည့်ရသေးပါ'));
+    list.appendChild(card);
+  });
+  wrap.appendChild(list);
+  var container = h('div', {class:'px', style:{paddingTop:'32px',paddingBottom:'32px'}}, wrap);
+
+  if (ui.editingId) {
+    var titleInput = h('input', {class:'input', id:'gr-title', value:ui.form.title_en, oninput:function(e){ ui.form.title_en=e.target.value; }});
+    var enInput = h('textarea', {class:'textarea', id:'gr-en', rows:4, oninput:function(e){ ui.form.content_en=e.target.value; }}, ui.form.content_en);
+    var myInput = h('textarea', {class:'textarea', id:'gr-my', rows:4, oninput:function(e){ ui.form.content_my=e.target.value; }}, ui.form.content_my);
+    container.appendChild(Modal({onClose:function(){ ui.editingId=null; render(); }, wide:true},[
+      h('h2', {class:'serif', style:{fontSize:'18px',color:'#F5EFDF',margin:'0 0 16px'}}, ui.editingId==="new"?"Add Grammar Point":"Edit"),
+      h('div', {class:'space-y'},
+        Field('Title', titleInput),
+        Field('English explanation', enInput),
+        Field('Yanban translation', myInput),
+        h('div', {class:'flex-row gap-2', style:{paddingTop:'4px'}},
+          h('button', {class:'btn btn-gold', style:{flex:'1'}, onclick:save}, t('save')),
+          h('button', {class:'btn btn-ghost', onclick:function(){ ui.editingId=null; render(); }}, t('cancel'))
+        )
+      )
+    ]));
+  }
+  return container;
+}
+
+/* ---------- Songs View ---------- */
+function buildSongsView(){
+  var canEdit = isOwner();
+  var ui = S.ui.songs;
+
+  function openNew(){ ui.editingId="new"; ui.form={title:"",lyrics:"",note:""}; render(); }
+  function openEdit(s){ ui.editingId=s.id; ui.form={title:s.title,lyrics:s.lyrics,note:s.note||""}; render(); }
+  function save(){
+    if (!ui.form.title.trim()) return;
+    if (ui.editingId==="new") persistSongs(S.songs.concat([Object.assign({id:uid("s")},ui.form,{createdAt:Date.now()})]));
+    else persistSongs(S.songs.map(function(s){ return s.id===ui.editingId ? Object.assign({},s,ui.form) : s; }));
+    ui.editingId=null; render();
+  }
+  function remove(id){ persistSongs(S.songs.filter(function(s){ return s.id!==id; })); }
+
+  var wrap = h('div', {class:'wrap'},
+    h('div', {class:'flex-between mb-3'},
+      h('h2', {class:'section-title'}, t('songs')),
+      canEdit ? h('button', {class:'btn btn-gold', onclick:openNew}, icon('plus',15), 'Add Song') : null
+    )
+  );
+  var list = h('div', {class:'space-y'});
+  S.songs.forEach(function(s){
+    var head = h('div', {class:'flex-between'},
+      h('button', {style:{textAlign:'left',flex:'1',display:'flex',alignItems:'center',gap:'8px',background:'none',border:'none',color:'inherit',padding:0}, onclick:function(){ ui.openId=(ui.openId===s.id?null:s.id); render(); }},
+        icon('music',14,{color:'var(--gold)'}),
+        h('span', {class:'serif', style:{fontSize:'16px',color:'#F5EFDF'}}, s.title)
+      )
+    );
+    if (canEdit) head.appendChild(h('div', {class:'flex-row gap-1', style:{flexShrink:'0'}},
+      h('button', {class:'icon-btn gold', onclick:function(){ openEdit(s); }}, icon('pencil',14)),
+      h('button', {class:'icon-btn red', onclick:function(){ remove(s.id); }}, icon('trash',14))
+    ));
+    var card = h('div', {class:'card'}, head);
+    if (ui.openId===s.id) {
+      var lyricsBox = h('div', {style:{marginTop:'10px',borderTop:'1px solid var(--border)',paddingTop:'10px'}},
+        h('p', {style:{fontSize:'14px',color:'var(--gold-light)',whiteSpace:'pre-wrap',margin:0}}, s.lyrics)
+      );
+      if (s.note) lyricsBox.appendChild(h('p', {style:{fontSize:'12px',color:'var(--text-mute)',marginTop:'8px',fontStyle:'italic'}}, s.note));
+      card.appendChild(lyricsBox);
+    }
+    list.appendChild(card);
+  });
+  if (S.songs.length===0) list.appendChild(h('p', {class:'muted', style:{fontSize:'14px',padding:'20px 0'}}, 'Song စာရင်း မရှိသေးပါ'));
+  wrap.appendChild(list);
+  var container = h('div', {class:'px', style:{paddingTop:'32px',paddingBottom:'32px'}}, wrap);
+
+  if (ui.editingId) {
+    var titleInput = h('input', {class:'input', id:'sg-title', value:ui.form.title, oninput:function(e){ ui.form.title=e.target.value; }});
+    var lyricsInput = h('textarea', {class:'textarea', id:'sg-lyrics', rows:8, oninput:function(e){ ui.form.lyrics=e.target.value; }}, ui.form.lyrics);
+    var noteInput = h('textarea', {class:'textarea', id:'sg-note', rows:3, oninput:function(e){ ui.form.note=e.target.value; }}, ui.form.note);
+    container.appendChild(Modal({onClose:function(){ ui.editingId=null; render(); }, wide:true},[
+      h('h2', {class:'serif', style:{fontSize:'18px',color:'#F5EFDF',margin:'0 0 16px'}}, ui.editingId==="new"?"Add Song":"Edit Song"),
+      h('div', {class:'space-y'},
+        Field('Title', titleInput),
+        Field('Lyrics (Yanban)', lyricsInput),
+        Field('Note / translation — optional', noteInput),
+        h('div', {class:'flex-row gap-2', style:{paddingTop:'4px'}},
+          h('button', {class:'btn btn-gold', style:{flex:'1'}, onclick:save}, t('save')),
+          h('button', {class:'btn btn-ghost', onclick:function(){ ui.editingId=null; render(); }}, t('cancel'))
+        )
+      )
+    ]));
+  }
+  return container;
+}
+
+/* ---------- About View ---------- */
+function buildAboutView(){
+  var canEdit = isOwner();
+  var ui = S.ui.about;
+  if (!ui.form) ui.form = Object.assign({}, S.about);
+
+  function save(){ persistAbout(ui.form); ui.editing=false; }
+
+  var wrap = h('div', {class:'wrap'},
+    h('div', {class:'flex-between mb-3'},
+      h('h2', {class:'section-title'}, t('about')),
+      (canEdit && !ui.editing) ? h('button', {class:'btn btn-ghost', onclick:function(){ ui.editing=true; render(); }}, icon('pencil',14), 'Edit') : null
+    )
+  );
+  if (!ui.editing) {
+    wrap.appendChild(h('div', {class:'space-y'},
+      h('p', {style:{fontSize:'14px',color:'var(--text-dim)',lineHeight:'1.7'}}, S.about.content_en),
+      h('p', {style:{fontSize:'14px',color:'var(--gold-light)',lineHeight:'1.7',borderTop:'1px solid var(--border)',paddingTop:'16px'}}, S.about.content_my)
+    ));
+  } else {
+    var enInput = h('textarea', {class:'textarea', id:'about-en', rows:5, oninput:function(e){ ui.form.content_en=e.target.value; }}, ui.form.content_en);
+    var myInput = h('textarea', {class:'textarea', id:'about-my', rows:5, oninput:function(e){ ui.form.content_my=e.target.value; }}, ui.form.content_my);
+    wrap.appendChild(h('div', {class:'space-y'},
+      Field('English', enInput),
+      Field('Myanmar / Yanban', myInput),
+      h('div', {class:'flex-row gap-2', style:{paddingTop:'4px'}},
+        h('button', {class:'btn btn-gold', style:{flex:'1'}, onclick:save}, t('save')),
+        h('button', {class:'btn btn-ghost', onclick:function(){ ui.editing=false; ui.form=Object.assign({},S.about); render(); }}, t('cancel'))
+      )
+    ));
+  }
+  return h('div', {class:'px', style:{paddingTop:'32px',paddingBottom:'32px'}}, wrap);
+}
+
+/* ---------- Team View ---------- */
+function buildTeamView(){
+  var ui = S.ui.team;
+  var pending = S.entries.filter(function(e){ return e.pending; });
+
+  function addDeveloper(){
+    if (!ui.newDev.trim()) return;
+    var exists = (S.config.developers||[]).some(function(d){ return d.name.toLowerCase()===ui.newDev.trim().toLowerCase(); });
+    if (exists) { ui.newDev=""; render(); return; }
+    persistConfig(Object.assign({}, S.config, {developers:(S.config.developers||[]).concat([{name:ui.newDev.trim(),addedAt:Date.now()}])}));
+    ui.newDev="";
+  }
+  function removeDeveloper(name){ persistConfig(Object.assign({}, S.config, {developers:(S.config.developers||[]).filter(function(d){ return d.name!==name; })})); }
+  function approveJoin(name){
+    persistConfig(Object.assign({}, S.config, {
+      developers:(S.config.developers||[]).concat([{name:name,addedAt:Date.now()}]),
+      joinRequests:(S.config.joinRequests||[]).filter(function(r){ return r.name!==name; })
+    }));
+  }
+  function dismissJoin(name){ persistConfig(Object.assign({}, S.config, {joinRequests:(S.config.joinRequests||[]).filter(function(r){ return r.name!==name; })})); }
+  function approvePending(id){
+    persistEntries(S.entries.map(function(e){
+      return e.id===id ? Object.assign({},e,{yanban:e.pending.yanban,meaning:e.pending.meaning,example:e.pending.example,pending:null}) : e;
+    }));
+  }
+  function rejectPending(id){ persistEntries(S.entries.map(function(e){ return e.id===id ? Object.assign({},e,{pending:null}) : e; })); }
+
+  var wrap = h('div', {class:'wrap space-y-lg'});
+
+  var sec1 = h('section', null,
+    h('h2', {class:'section-title mb-2', style:{display:'flex',alignItems:'center',gap:'8px'}}, icon('clock',17,{color:'var(--gold)'}), 'Pending translations ('+pending.length+')')
+  );
+  if (pending.length===0) sec1.appendChild(h('p', {class:'muted', style:{fontSize:'14px'}}, 'စောင့်ဆိုင်းနေသော တင်ပြချက် မရှိပါ'));
+  else {
+    var pl = h('div', {class:'space-y'});
+    pending.forEach(function(e){
+      pl.appendChild(h('div', {class:'card'},
+        h('div', {style:{display:'flex',alignItems:'baseline',gap:'8px',flexWrap:'wrap'}},
+          h('span', {class:'serif', style:{fontSize:'16px',color:'#F5EFDF'}}, e.en),
+          h('span', {style:{color:'#5c6472'}}, '→'),
+          h('span', {class:'mono', style:{fontSize:'14px',color:'var(--gold-light)'}}, e.pending.yanban)
+        ),
+        e.pending.meaning ? h('p', {style:{fontSize:'14px',color:'var(--text-dim)',marginTop:'4px'}}, e.pending.meaning) : null,
+        h('p', {class:'mono', style:{fontSize:'10px',color:'var(--text-mute)',marginTop:'6px'}}, 'by '+e.pending.submittedBy),
+        h('div', {class:'flex-row gap-1', style:{marginTop:'10px'}},
+          h('button', {class:'btn btn-green', onclick:function(){ approvePending(e.id); }}, icon('check',13), 'Approve'),
+          h('button', {class:'btn btn-outline-red', onclick:function(){ rejectPending(e.id); }}, icon('xcircle',13), 'Reject')
+        )
+      ));
+    });
+    sec1.appendChild(pl);
+  }
+  wrap.appendChild(sec1);
+
+  var sec2 = h('section', null,
+    h('h2', {class:'section-title mb-2', style:{display:'flex',alignItems:'center',gap:'8px'}}, icon('userplus',17,{color:'var(--gold)'}), 'Join requests ('+(S.config.joinRequests||[]).length+')')
+  );
+  var jl = h('div', {class:'space-y'});
+  (S.config.joinRequests||[]).forEach(function(r){
+    jl.appendChild(h('div', {style:{display:'flex',alignItems:'center',justifyContent:'space-between',background:'var(--panel)',border:'1px solid var(--border)',borderRadius:'6px',padding:'10px 16px'}},
+      h('span', {style:{fontSize:'14px'}}, r.name),
+      h('div', {class:'flex-row gap-1'},
+        h('button', {class:'btn btn-green', onclick:function(){ approveJoin(r.name); }}, 'Approve'),
+        h('button', {class:'btn btn-ghost', style:{fontSize:'12px',padding:'6px 12px'}, onclick:function(){ dismissJoin(r.name); }}, 'Dismiss')
+      )
+    ));
+  });
+  if ((S.config.joinRequests||[]).length===0) jl.appendChild(h('p', {class:'muted', style:{fontSize:'14px'}}, 'Join request မရှိပါ'));
+  sec2.appendChild(jl);
+  wrap.appendChild(sec2);
+
+  var sec3 = h('section', null,
+    h('h2', {class:'section-title mb-2', style:{display:'flex',alignItems:'center',gap:'8px'}}, icon('users',17,{color:'var(--gold)'}), 'Developers ('+(S.config.developers||[]).length+')')
+  );
+  var devInput = h('input', {class:'input', id:'team-newdev', placeholder:'Developer name ထည့်ပါ', value:ui.newDev, oninput:function(e){ ui.newDev=e.target.value; }});
+  sec3.appendChild(h('div', {class:'flex-row gap-1', style:{marginBottom:'12px'}}, devInput, h('button', {class:'btn btn-gold', onclick:addDeveloper}, 'Add')));
+  var dl = h('div', {class:'space-y'});
+  (S.config.developers||[]).forEach(function(d){
+    dl.appendChild(h('div', {style:{display:'flex',alignItems:'center',justifyContent:'space-between',background:'var(--panel)',border:'1px solid var(--border)',borderRadius:'6px',padding:'10px 16px'}},
+      h('span', {style:{fontSize:'14px'}}, d.name),
+      h('button', {class:'btn-outline-red btn', onclick:function(){ removeDeveloper(d.name); }}, icon('userminus',13), 'Remove')
+    ));
+  });
+  if ((S.config.developers||[]).length===0) dl.appendChild(h('p', {class:'muted', style:{fontSize:'14px'}}, 'Developer မရှိသေးပါ'));
+  sec3.appendChild(dl);
+  wrap.appendChild(sec3);
+
+  return h('div', {class:'px', style:{paddingTop:'32px',paddingBottom:'32px'}}, wrap);
+}
+
+/* ================= boot ================= */
+try {
+  init();
+} catch (err) {
+  root.innerHTML = "";
+  root.appendChild(h('div', {style:{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px',textAlign:'center'}},
+    h('div', null,
+      h('p', {style:{color:'var(--red)',fontSize:'16px',marginBottom:'8px'}}, 'App error တစ်ခု ဖြစ်ပွားနေပါသည်'),
+      h('p', {class:'mono', style:{fontSize:'11px',color:'var(--text-mute)',whiteSpace:'pre-wrap'}}, String(err && err.message))
+    )
+  ));
+}
+})();
+</script>
+</body>
+</html>
